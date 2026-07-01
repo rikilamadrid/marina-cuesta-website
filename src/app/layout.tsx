@@ -1,8 +1,5 @@
 import type { Metadata } from "next";
 import { Fraunces, Hanken_Grotesk } from "next/font/google";
-import Nav from "@/components/layout/Nav";
-import Spine from "@/components/layout/Spine";
-import Footer from "@/components/layout/Footer";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -37,12 +34,7 @@ export default function RootLayout({
       lang="en"
       className={`${fraunces.variable} ${hankenGrotesk.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">
-        <Spine />
-        <Nav />
-        {children}
-        <Footer />
-      </body>
+      <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );
 }

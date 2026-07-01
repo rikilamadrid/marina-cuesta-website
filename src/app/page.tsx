@@ -1,7 +1,7 @@
 export default function Home() {
   return (
     <main className="flex flex-1 items-center justify-center">
-      <h1 className="text-2xl font-semibold tracking-tight">Marina Cuesta</h1>
+      <h1 className="font-display text-2xl text-ink">Marina Cuesta</h1>
     </main>
   );
 }

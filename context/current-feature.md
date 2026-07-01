@@ -1,6 +1,6 @@
 # Current Feature
 
-Feature 06 — Sanity Schema: Site Settings (Singleton)
+Feature 07 — Sanity Schema: Project
 
 ## Status
 
@@ -8,33 +8,31 @@ Done
 
 ## Goals
 
-- Create `src/sanity/schema/siteSettings.ts` (type `siteSettings`, document) matching the `SiteSettings` interface: `name`, `jobTitle`, `headshot` (image, hotspot/crop on), `shortBio`, `longBio` (Portable Text), `careerArc` (array of `{ org, note }`), `email`, `socials` (array of `{ label, href }`), `seo` (`{ title, description }`).
-- Every field gets a plain-language `title` + one-line `description` written for Marina.
-- Validation: required `name`/`jobTitle`/`headshot`/`email` (email format), URL format on `socials.href`.
-- Create shared `src/sanity/schema/objects/seo.ts` (reused by `project` in feature 07).
-- Register via `src/sanity/schema/index.ts`; wire into `sanity.config.ts` `schema.types`.
-- Verify the `Site Settings` document type appears and is editable in `/studio`; `npm run build` passes.
+- Create `src/sanity/schema/project.ts` (type `project`, document) matching the `Project` interface: `title`, `slug` (from title), `client`, `category` (enum: Global Brands · Multicultural · Feminist & Social · Culture & Film), `year`, `market` (multi-select: US / U.S. Hispanic / Europe / Global), `role`, `summary` (card one-liner), `body` (Portable Text), `cover` (image, hotspot, optional), `gallery` (array of image or `{ videoUrl }`), `externalLink`, `featured` (boolean), `order` (number).
+- Plain-language titles + one-line descriptions on every field, written for Marina.
+- Validation: required `title`/`client`/`category`/`summary`; URL format on `externalLink` (+ gallery `videoUrl`).
+- Editor-friendly preview: client + title + category + cover thumbnail.
+- Register in `src/sanity/schema/index.ts` (already wired into `sanity.config.ts` via `schemaTypes`).
+- Verify create/edit a project in `/studio`; `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/06-schema-site-settings.md`. Depends on `05` — done.
-- **One-photo rule:** `headshot` is set only here → flows to hero, About, `og:image`, `Person` JSON-LD. Hotspot enabled so crops stay controlled across breakpoints.
-- **`seo` as a shared object** (`objects/seo.ts`), not inline — anticipating reuse in `project` (07). `careerArc` item + `socials` item kept as inline anonymous objects (specific to this doc).
-- Designed as a singleton, but singleton enforcement (hide "create new", pin to top) is feature `09`, not here.
-- No `alt` field on `headshot` — alt is deterministic ("Marina Cuesta, Executive Creative Director"), derived at render time; keeps the interface true to spec.
-- Seed values (name, hero statement, socials, bio, career arc) live in `@context/project-overview.md` → Seed Content; actual seeding is `10`.
-- **Studio access gotchas discovered while verifying (Sanity "Content OS"):** (1) A local Studio must be whitelisted as a **development host** in the dashboard before it can read content — done for `http://localhost:3003` (do the same for any new dev port / the prod URL at deploy). (2) **Login provider identity matters:** the project member `riki.lamadrid@gmail.com` is authed via **GitHub**; signing into the Studio via **Google** with the same email is treated as a *different* account → "Not authorized." Always sign into `/studio` with **GitHub**.
+- Full spec: `@context/features/07-schema-project.md`. Depends on `05` — done. Independent of `06`/`08`.
+- Category is a fixed set used by the Work filters (All / Global Brands / Multicultural / Feminist & Social / Culture & Film).
+- `cover` optional by design — projects with no cover render a gradient tile (built in `13`).
+- `externalLink` kept as a simple `url` string to match the `Project` interface (interface types it as `string`, not an object). Not creating the shared `objects/link.ts` yet — press (`08`) uses a plain `link: string` too; revisit if a labelled link object is actually needed.
+- Seed project list lives in `@context/project-overview.md` → Seed Content; seeding is `10`.
 
 ## Out of Scope
 
-- Populating real content / seeding — feature `10`.
-- The actual headshot image (client provides; placeholder until then).
-- Rendering these fields in the UI — Phase 3+.
-- Singleton desk-structure pinning — feature `09`.
-- `project` / `pressMention` schemas — features `07`/`08`.
+- Drag-to-reorder UI wiring (`@sanity/orderable-document-list`) — feature `09`.
+- Seeding real projects — feature `10`.
+- Project card / detail rendering — Phase 3 (`13`, `14`) and Phase 4 (`18`).
+- Gallery/video rendering — feature `19`.
 
 ## History
 
+- **2026-07-01** — Feature 07 (Sanity Schema: Project) complete. Added `src/sanity/schema/project.ts` (type `project`, document): fields in editor-thinking order — `title`, `slug` (from `title`, maxLength 96), `client`, `category` (radio: Global Brands · Multicultural · Feminist & Social · Culture & Film), `year`, `market` (multi-select checklist: US / U.S. Hispanic / Europe / Global), `role`, `summary` (required card one-liner), `body` (Portable Text `block[]`), `cover` (image, `hotspot: true`, optional → gradient-tile fallback in `13`), `gallery` (array of image **or** named `videoEmbed` `{ videoUrl }` object), `externalLink` (`url`), `featured` (boolean "Show on homepage", `initialValue: false`), `order` (number). Validation: required `title`/`client`/`category`/`summary`; http/https URL scheme on `externalLink` + gallery `videoUrl`. Preview shows `client — title`, category subtitle, cover thumbnail. `externalLink` kept as a plain `url` string (interface types it `string`); did **not** create `objects/link.ts` — press (`08`) also uses a bare `link: string`. Registered in `src/sanity/schema/index.ts`. `npm run build` passes; Studio create/edit verified. Merged to main.
 - **2026-07-01** — Feature 06 (Sanity Schema: Site Settings singleton) complete. Added shared `src/sanity/schema/objects/seo.ts` (`title`/`description` with editor-friendly max-length warnings) and `src/sanity/schema/siteSettings.ts` (type `siteSettings`, document): fields in editor-thinking order — `name`, `jobTitle`, `headshot` (image, `hotspot: true`, one-photo-rule description), `shortBio` (hero statement), `longBio` (Portable Text `block[]`), `careerArc` (`{ org, note }[]` with preview), `email`, `socials` (`{ label, href }[]`, `href` type `url` with preview), `seo` (shared object). Validation: required `name`/`jobTitle`/`headshot`/`email` (+ `.email()`), URL scheme http/https on socials. No `alt` field (alt derived from name+jobTitle at render). Registered via `src/sanity/schema/index.ts` → `sanity.config.ts` `schema.types`. `npm run build` passes; Studio verified (Site Settings editable) after resolving two Sanity Content-OS access gates: added `localhost:3003` as a **development host**, and signed into `/studio` via **GitHub** (the identity that is the project member — Google w/ same email is a distinct, unauthorized account). Merged to main.
 - **2026-07-01** — Feature 05 (Sanity Setup & Embedded Studio Route) complete. Installed `sanity@6.3.0`, `next-sanity@13.1.1`, `@sanity/vision@6.3.0`, `@sanity/image-url@2.1.1`, `styled-components@6.4.3`. Added `src/sanity/env.ts` (reads `NEXT_PUBLIC_SANITY_*` with `assertValue`), `src/sanity/lib/client.ts` (`useCdn: true`), `src/sanity/lib/image.ts` (`urlFor`; type `SanityImageSource` imported from `@sanity/image-url` root — moved in v2). Added `sanity.config.ts` (structureTool + visionTool, `basePath: /studio`, empty schema) + `sanity.cli.ts`, and the embedded Studio at `src/app/studio/[[...tool]]/page.tsx`. Moved site chrome into a `(site)` route group (`src/app/(site)/layout.tsx` = Spine/Nav/Footer; home page → `src/app/(site)/page.tsx`); root `layout.tsx` reduced to `<html>/<body>` + fonts so `/studio` renders full-screen with no chrome. Pinned Node ≥22.12 via `.nvmrc` + `package.json` engines (Sanity 6 hard-blocks Node 20). Sanity project `dnzlfg96` / dataset `production`; `.env.local` written (gitignored), `.env.example` committed. `/studio` loads and browser login verified; `npm run build` passes. First Phase 2 feature. Merged to main. **Manual follow-up:** CORS origin `http://localhost:3003` added in sanity.io/manage; add the production URL there at deploy time.
 - **2026-07-01** — Initial Next.js + Tailwind v4 setup. Scaffolded from Create Next App, removed default boilerplate (demo page, SVGs, README, AGENTS.md), added project context docs. Committed (`chore: initial commit`) and pushed to `rikilamadrid/marina-cuesta-website`. Set dev port to 3003.

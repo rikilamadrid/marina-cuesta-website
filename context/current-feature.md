@@ -1,27 +1,30 @@
 # Current Feature
 
-Dashboard UI — Phase 1: Layout Foundation
+Feature 01 — Design Tokens & Global Styles
 
 ## Status
 
-In Progress
+Done
 
 ## Goals
 
-- Initialize shadcn/ui and install required components
-- Create `/dashboard` route
-- Set up main dashboard layout with global styles
-- Dark mode by default
-- Top bar with search input and "New Item" button (display only)
-- Sidebar and main content area placeholders (h2 "Sidebar" / "Main")
+- Port every design token from `@context/marina-cuesta.html` into `src/app/globals.css` using the Tailwind v4 `@theme` directive (NO `tailwind.config.*` file).
+- Surfaces: `--color-paper #FAF7F2`, `--color-bone #F3ECE3`, `--color-blush #EBD9D2`.
+- Ink: `--color-ink #1A1714`, `--color-ink-2 #5A524B`, `--color-line #E6DED3`.
+- Accent: `--color-garnet #B11E3A`, `--color-garnet-deep #7C0B1B`, `--color-oxblood #3D0D17`.
+- Form tokens: `--radius 3px`, `--shadow`, `--ease cubic-bezier(.22,.61,.36,1)`.
+- Base `body`: paper background, ink text, line-height 1.5, antialiasing.
+- Verify tokens resolve as Tailwind utilities (`bg-paper`, `text-garnet`) with a throwaway swatch, then remove it.
+- `npm run build` passes.
 
 ## Notes
 
-- Reference screenshot: `@context/screenshots/dashboard-ui-main.png`
-- Phase 2 and 3 specs are in `@context/features/`
-- Mock data available at `@src/lib/mock-data.ts`
+- Full spec: `@context/features/01-design-tokens-and-globals.md`.
+- Token source of truth: `:root` block in `@context/marina-cuesta.html` (lines 54–68) and Design System in `@context/project-overview.md`.
+- Tailwind **v4**, CSS-based config via `@theme` in `globals.css`. No JS/TS Tailwind config.
+- Fonts wired in Feature 02 — leave `--font-display` / `--font-body` as `@theme` placeholders only.
 
 ## History
 
-- **2026-06-28** — Initial Next.js + Tailwind CSS v4 setup. Scaffolded from Create Next App, removed default boilerplate (SVGs, AGENTS.md), added project context docs. Committed (`chore: initial nextjs and tailwind set up`) and pushed to remote `rikilamadrid/devstash`.
-- **2026-06-29** — Added mock data (`src/lib/mock-data.ts`) and dashboard screenshots. Committed (`feat: add mock data and dashboard screenshots`).
+- **2026-07-01** — Initial Next.js + Tailwind v4 setup. Scaffolded from Create Next App, removed default boilerplate (demo page, SVGs, README, AGENTS.md), added project context docs. Committed (`chore: initial commit`) and pushed to `rikilamadrid/marina-cuesta-website`. Set dev port to 3003.
+- **2026-07-01** — Feature 01 (Design Tokens & Global Styles) complete. Ported all surface/ink/accent/form tokens into `src/app/globals.css` via Tailwind v4 `@theme` (no JS config); set base `body`/`html`/`::selection`. Verified `bg-*`/`text-*`/`font-*` utilities resolve with a throwaway swatch, then removed it. Merged to main.

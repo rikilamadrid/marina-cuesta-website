@@ -16,9 +16,9 @@
   --color-garnet-deep: #7c0b1b;
   --color-oxblood: #3d0d17;
 
-  /* Type — fonts loaded in Feature 02, placeholders for now */
-  --font-display: Georgia, serif;
-  --font-body: system-ui, -apple-system, sans-serif;
+  /* Type — Fraunces (display) + Hanken Grotesk (body), loaded via next/font */
+  --font-display: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-hanken), system-ui, -apple-system, sans-serif;
 
   /* Form */
   --radius: 3px;

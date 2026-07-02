@@ -4,7 +4,7 @@ Feature 14 — Work Index: Live Search & Category Filter
 
 ## Status
 
-Complete — pending commit.
+Complete — merged to main.
 
 ## Goals
 

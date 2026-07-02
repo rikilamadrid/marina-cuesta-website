@@ -1,33 +1,34 @@
 # Current Feature
 
-Feature 10 — GROQ Queries & Seed Content
+Feature 11 — Hero Section
 
 ## Status
 
-Complete — merged to main. **Phase 2 done** (except Marina uploading her real headshot).
+In progress — built, build passes, renders with seeded content. **Phase 3 begins.** Awaiting review/commit.
 
 ## Goals
 
-- Create `src/sanity/lib/queries.ts` with one exported GROQ query per data need: site settings (singleton), featured projects, all projects (ordered), single project by slug, all press mentions (ordered).
-- Type the query results (interfaces in `src/types/`) so front-end consumers are strongly typed.
-- Set up `sanityFetch` (or equivalent) with cache tags so the revalidation webhook (`25`) can target them later.
-- Seed Sanity with the real content from `@context/project-overview.md` → Seed Content: Site Settings (with a clearly-marked headshot placeholder), ~18 projects (~6–8 `featured`), 2–3 press placeholders. **Repeatable seed script** preferred — note which was used.
-- Verify a temp server component can fetch + log site settings + projects, then remove it.
-- `npm run build` passes.
+- Build `src/components/home/Hero.tsx` and render it at the top of the home page (`src/app/(site)/page.tsx`, id `top`).
+- Bilingual garnet eyebrow, name as typographic monument (first roman + last italic garnet), hero statement, stat row, framed editorial headshot beside the name.
+- Content from **Sanity Site Settings** (`name`, `jobTitle`, `shortBio`, `headshot`) — never hardcoded.
+- Headshot via `next/image` + `urlFor()`; clearly-marked placeholder when unset.
+- Responsive: portrait drops above type on mobile, type scale tightens.
+- `npm run build` passes; hero renders with seeded content.
 
 ## Notes
 
-- Full spec: `@context/features/10-groq-queries-and-seed-content.md`. **Depends on** `06`–`09` (schemas + structure — all done).
-- Seeding via a scripted `@sanity/client` import (needs `SANITY_API_WRITE_TOKEN` in `.env.local`, gitignored). User is providing the token.
-- Bilingual accents are **chosen, not machine-translated** — use exact seed copy (e.g. "Oda a la Mezcla").
-- Real headshot / real cover images are **not** in scope — placeholders only until the client provides them.
-- Last Phase 2 feature — after this, real content exists for Phase 3 to render.
+- Full spec: `@context/features/11-hero-section.md`. **Depends on** Phase 1 shell + `10` (queries/seed).
+- Home page (`src/app/(site)/page.tsx`) now async — fetches `siteSettingsQuery` via `sanityFetch` (tagged `siteSettings`) and passes to `<Hero settings>`.
+- **Stats are static brand copy** (20+ / 50+ / 3 / Cannes) — a `STATS` const in `Hero.tsx`, not Site Settings fields (prototype treats them static).
+- Name split at whitespace: last word → italic garnet, rest → roman; single-word names fall back to roman-only.
+- Headshot placeholder shows when `headshot?.asset` is missing — blush gradient + person icon + "Marina's headshot", matching prototype `.hero-portrait .ph`.
+- Real headshot still client-provided; placeholder is the current state.
 
 ## Out of Scope
 
-- The revalidate webhook itself — Phase 5 (`25`).
-- Real headshot / real cover images — placeholders only.
-- Any UI — Phase 3 begins consuming these queries.
+- Hero mask-up line-by-line reveal + scrollcue animation — Phase 6 motion (`27`).
+- Nav color inversion over hero — Phase 6.
+- Manifesto, work grid, recognition, contact — separate Phase 3 features.
 
 ## History
 

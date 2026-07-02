@@ -1,4 +1,8 @@
 import { CaseIcon } from "@sanity/icons";
+import {
+  orderRankField,
+  orderRankOrdering,
+} from "@sanity/orderable-document-list";
 import { defineArrayMember, defineField, defineType } from "sanity";
 
 export const project = defineType({
@@ -6,6 +10,7 @@ export const project = defineType({
   title: "Project",
   type: "document",
   icon: CaseIcon,
+  orderings: [orderRankOrdering],
   fields: [
     defineField({
       name: "title",
@@ -142,12 +147,8 @@ export const project = defineType({
       description: "Turn on to feature this work in the Selected Work section of the homepage.",
       initialValue: false,
     }),
-    defineField({
-      name: "order",
-      title: "Sort order",
-      type: "number",
-      description: "Controls the position in lists — lower numbers show first.",
-    }),
+    // Managed by the drag-to-reorder list in the Studio (hidden from the form).
+    orderRankField({ type: "project" }),
   ],
   preview: {
     select: {

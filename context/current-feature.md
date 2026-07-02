@@ -1,36 +1,35 @@
 # Current Feature
 
-Feature 11 — Hero Section
+Feature 12 — Manifesto Section (Oxblood Point-of-View)
 
 ## Status
 
-Complete — merged to main. **Phase 3 begun** (first UI section on the public site).
+Complete — committed on `feature/manifesto-section`.
 
 ## Goals
 
-- Build `src/components/home/Hero.tsx` and render it at the top of the home page (`src/app/(site)/page.tsx`, id `top`).
-- Bilingual garnet eyebrow, name as typographic monument (first roman + last italic garnet), hero statement, stat row, framed editorial headshot beside the name.
-- Content from **Sanity Site Settings** (`name`, `jobTitle`, `shortBio`, `headshot`) — never hardcoded.
-- Headshot via `next/image` + `urlFor()`; clearly-marked placeholder when unset.
-- Responsive: portrait drops above type on mobile, type scale tightens.
-- `npm run build` passes; hero renders with seeded content.
+- Build `src/components/home/Manifesto.tsx` and place it on the home page after the hero (id `pov`).
+- Full-bleed **oxblood** field with `bone` text; eyebrow "THE POINT OF VIEW"; big display blockquote with *conviction* in garnet italic.
+- 4-up credo row beneath (**Ideas first · Empathy as strategy · Culture, not clichés · Women, leading**), each with a one-line description and a top rule.
+- Faint **"JEFA" ghost watermark** behind the section (very low-opacity italic Fraunces).
+- Bone-on-oxblood passes AA contrast; spine `mix-blend-mode` inverts correctly over the oxblood.
+- Uses the hero's spine-gutter left-inset convention; `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/11-hero-section.md`. **Depends on** Phase 1 shell + `10` (queries/seed).
-- Home page (`src/app/(site)/page.tsx`) now async — fetches `siteSettingsQuery` via `sanityFetch` (tagged `siteSettings`) and passes to `<Hero settings>`.
-- **Stats are static brand copy** (20+ / 50+ / 3 / Cannes) — a `STATS` const in `Hero.tsx`, not Site Settings fields (prototype treats them static).
-- Name split at whitespace: last word → italic garnet, rest → roman; single-word names fall back to roman-only.
-- Headshot placeholder shows when `headshot?.asset` is missing — blush gradient + person icon + "Marina's headshot", matching prototype `.hero-portrait .ph`.
-- Real headshot still client-provided; placeholder is the current state.
+- Full spec: `@context/features/12-manifesto-section.md`. **Depends on** Phase 1 tokens/fonts.
+- Copy is **fixed editorial brand copy — hardcoded** (the brand thesis, not CMS content), per spec.
+- Tokens ported from prototype `.manifesto` (marina-cuesta.html ~162–175 styles, ~394–406 markup): oxblood bg / bone text, blush eyebrow, `blockquote` `clamp(1.7rem,4.6vw,3.4rem)` max-w 16ch, JEFA `::after` at `rgba(243,236,227,.045)`, credo top-border `bone/20`, `.v` desc `bone/70`.
 
 ## Out of Scope
 
-- Hero mask-up line-by-line reveal + scrollcue animation — Phase 6 motion (`27`).
-- Nav color inversion over hero — Phase 6.
-- Manifesto, work grid, recognition, contact — separate Phase 3 features.
+- Fade-in motion on quote/credo — Phase 6.
+- The contact section (also oxblood) — feature `16`.
+- Making manifesto copy CMS-editable (unless explicitly requested).
 
 ## History
+
+- **2026-07-02** — Feature 12 (Manifesto Section) complete. Added `src/components/home/Manifesto.tsx` and mounted it after `<Hero>` in `src/app/(site)/page.tsx` (id `pov`). Full-bleed `bg-oxblood` / `text-bone` section: blush eyebrow "The Point of View" with `::before` rule, display blockquote (`clamp(1.7rem,4.6vw,3.4rem)`, max-w 16ch) with *conviction* in garnet italic, and a 4-up credo grid (Ideas first · Empathy as strategy · Culture, not clichés · Women, leading) each with a `bone/20` top rule and `bone/70` one-line description. Faint decorative "JEFA" ghost watermark (`aria-hidden`, italic Fraunces at `rgba(243,236,227,0.045)`) sits behind the content. Copy is **fixed editorial brand copy — hardcoded** (the brand thesis, not CMS content), per spec. Reuses the hero's **72px spine-gutter left-inset** at `min-[981px]`. All colors from tokens (oxblood/bone/blush/garnet) — no magic hex. Responsive: credo drops to 2-up ≤720px. Out of scope (deferred to Phase 6): fade-in motion on quote/credo. Verified: `npm run build` passes clean. Second Phase 3 UI section.
 
 - **2026-07-02** — Follow-up fix (`fix: reserve spine gutter so hero clears the nameplate`, committed direct to main + pushed): at typical laptop widths (~1200–1280px) the centered hero content's left edge (~28px) collided with the fixed vertical spine nameplate (occupies ~18–52px). Widened the hero container's left padding to a **72px spine gutter** at `min-[981px]` (where the spine is visible) so the nameplate sits in margin, not over the type; mobile untouched. Documented as the **shared left-inset convention** for upcoming Phase 3 sections. `main` pushed to origin.
 - **2026-07-02** — Feature 11 (Hero Section) complete. Added `src/components/home/Hero.tsx` and made `src/app/(site)/page.tsx` an async server component that fetches `siteSettingsQuery` via the tagged `sanityFetch` (`siteSettings` cache tag) and passes it to `<Hero settings>` (renders `null` if unset). Hero ports the prototype `#top` tokens: bilingual garnet eyebrow with `::before` rule, name as a typographic monument (name split at whitespace → last word italic garnet, rest roman; single-word names fall back to roman-only) at `clamp(3.2rem,10vw,9rem)`, the `shortBio` statement, a 4-stat row, and a framed 4/5 headshot beside the name. Content (`name`/`jobTitle`/`shortBio`/`headshot`) is 100% Sanity-driven; **stats are static brand copy** (20+ / 50+ / 3 / Cannes) in a `STATS` const, matching the prototype (not Site Settings fields). Headshot uses `next/image` + `urlFor().width(640).height(800).fit("crop")` with `priority`; falls back to the clearly-marked blush-gradient "Marina's headshot" placeholder when `headshot?.asset` is missing (current state — real photo still client-provided). Alt derives from `name, jobTitle` (one-photo rule, no separate alt field). Responsive: portrait drops above the type block on ≤860px and shrinks to 172px; type scales tighten via clamp. Out of scope (deferred to Phase 6 `27`): mask-up line reveal, scrollcue animation, nav color inversion. Verified: `npm run build` passes clean; dev server returns 200 with eyebrow/name/stats/placeholder/scroll cue in the rendered HTML. Merged to main. **First Phase 3 UI section.**

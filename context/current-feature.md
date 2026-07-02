@@ -1,39 +1,36 @@
 # Current Feature
 
-Feature 20 — About Page (`/about`)
+Feature 21 — Press Page (`/press`)
 
 ## Status
 
-Complete — branch `feature/about-page`; ready for review/merge.
+Complete — branch `feature/press-page`; ready for review/merge.
 
 ## Goals
 
-- Build `src/app/(site)/about/page.tsx` as the dedicated About page inside the chrome route group.
-- Render Marina's long-form bio through the shared **PortableText** renderer.
-- Render the Site Settings headshot through `next/image` + `urlFor()` with the same one-photo source as the hero.
-- Include the Site Settings `careerArc` rows in an editorial table/list treatment.
-- Update navigation so the About link resolves to `/about`.
-- Keep the composition aligned with `@context/screenshots/marina-example4.png` and the prototype's "02 About" treatment.
-- `npm run build` passes.
+- Build `src/app/(site)/press/page.tsx` (server component) fetching all press mentions (ordered) and `src/components/press/PressList.tsx` to render them.
+- Each row: outlet label (garnet small caps) · headline (Fraunces) · type · external arrow link — full-row is a link to the piece.
+- Graceful empty state; try/catch around the fetch.
+- Ensure the "Press" nav link resolves to `/press`.
+- `npm run build` passes; seeded press placeholders render as links.
 
 ## Notes
 
-- Full spec: `@context/features/20-about-page.md`.
-- Depends on Feature 17 (PortableText) and Feature 10 (seeded Site Settings).
-- Route should live at `src/app/(site)/about/page.tsx`, not bare `src/app/about/page.tsx`, so it inherits Nav/Spine/Footer.
-- Visual + copy source: `@context/screenshots/marina-example4.png`, `@context/marina-cuesta.html`, and seed Site Settings content from `@context/project-overview.md`.
-- One-photo rule remains strict: do not hardcode a headshot path or add a second headshot field.
-- One `<h1>` on the page with logical heading order; metadata/OG remain Phase 5.
-- `npm run build` passes. Existing dev server at `localhost:3003` returns 200 for `/about` and renders the Sanity headshot, long bio, and all 5 career arc rows.
+- Full spec: `@context/features/21-press-page.md`.
+- Depends on Feature 08 (schema) and Feature 10 (queries/seed). Independent of About/detail.
+- Route lives at `src/app/(site)/press/page.tsx` (chrome route group) so it inherits Nav/Spine/Footer — same convention as `/about` and `/work`, not bare `src/app/press/page.tsx`.
+- Visual source: "Press & Mentions" list in `@context/screenshots/marina-example5.png` and prototype `#press` (`@context/marina-cuesta.html` ~470–478 + `.press-item` CSS ~251–256).
+- Completes **Phase 4** — all dedicated pages (`/work/[slug]`, `/about`, `/press`) now exist.
 
 ## Out of Scope
 
 - Per-page metadata / OG image / JSON-LD — Phase 5 (`22`, `23`).
-- The home Recognition section — already completed in Feature 16.
+- Filtering/sorting press by type.
 - Motion — Phase 6.
 
 ## History
 
+- **2026-07-02** — Feature 21 (Press Page `/press`) complete. Added `src/app/(site)/press/page.tsx` inside the chrome route group as a static server page fetching `allPressQuery` with the `pressMention` cache tag, wrapped in `try/catch` (fails soft to `[]`). It renders a single `<h1>` "04 Press & Mentions" (same garnet super-script index treatment as About's "02 About") and hands the ordered list to `src/components/press/PressList.tsx`. Each press row is a full-row `<a>` (`grid-cols-[auto_1fr_auto]`) porting the prototype `.press-item`: garnet small-caps `outlet` (min-w 130px), Fraunces `title` with an `ink-2` uppercase `type · date` meta line beneath (both guarded), and a `↗` arrow that nudges up-right + turns garnet on hover/focus; the whole row shifts `pl-3` on hover/focus. External http(s) links get `target=_blank` + `rel=noopener noreferrer`; the list renders a graceful "on the way" empty state when there are no mentions. Collapses to a 2-col layout ≤600px (outlet spans full width). Updated `src/components/layout/Nav.tsx` so the Press link resolves to `/press` (was the dead `#press` anchor — no home Press section exists). Completes **Phase 4** (all dedicated pages now exist). Verified: `npm run build` passes and prerenders `/press` as static (`○`); the prerendered `press.html` contains the "Press & Mentions" head and 6 press rows (all `↗` arrows) from current Sanity content.
 - **2026-07-02** — Feature 20 (About Page `/about`) complete. Added `src/app/(site)/about/page.tsx` inside the chrome route group as a static server page fetching `siteSettingsQuery` with the `siteSettings` cache tag. The page renders a single `<h1>` "02 About", a responsive editorial 4/5 portrait using the one Site Settings `headshot` via `next/image` + `urlFor()` (with the same derived alt text pattern as Hero and a placeholder fallback), the Site Settings `longBio` through the shared `PortableText` renderer with the first paragraph styled as the prototype lead, and the Site Settings `careerArc` rows as a bordered definition-list table. Updated `src/components/layout/Nav.tsx` so the About link resolves to `/about`. Verified: `npm run build` passes and prerenders `/about` as static; existing dev server at `localhost:3003/about` returns 200 with the Sanity headshot, long bio, and all 5 career rows.
 - **2026-07-02** — Feature 19 (Project Gallery & Video Embeds) complete. Added `src/components/work/ProjectMedia.tsx` and mounted it in `src/components/work/ProjectDetail.tsx` after the project write-up. The detail page now renders Sanity `gallery` items in CMS order, with image items displayed via `next/image` + `urlFor()` inside restrained editorial frames and video items parsed into responsive embeds for YouTube (`youtube-nocookie.com`) and Vimeo (`player.vimeo.com` with `dnt=1`). Empty galleries render nothing, missing image assets are ignored, and unsupported video URLs are skipped so they never leave an empty gallery section. Verified: `npm run build` passes; `/work/p-g-the-pattern-bra` returns 200 with no gallery when empty; a local untracked `/media-check` route rendered YouTube + Vimeo embed markup for verification.
 - **2026-07-02** — Feature 18 (Project Detail Page `/work/[slug]`) complete. Added the SSG project detail route at `src/app/(site)/work/[slug]/page.tsx` inside the chrome route group, using `generateStaticParams` from `allProjectsQuery` and a guarded single-project fetch via `projectBySlugQuery` + `notFound()` for unknown or failed slugs. Added presentational `src/components/work/ProjectDetail.tsx` with the editorial paper treatment: back-to-work link, garnet category eyebrow, Fraunces title, meta row (`client` / `role` / `year` / `market`), summary lead, shared Portable Text body renderer, and external CTA when `externalLink` exists. Reuses the shared `.wrap` / 72px spine-gutter convention and leaves gallery/video to feature `19`, metadata/JSON-LD to Phase 5, and page-transition motion to Phase 6. Verified: `npm run build` passes; `/work/[slug]` prerenders as SSG with 20 seeded paths. Merged to main.

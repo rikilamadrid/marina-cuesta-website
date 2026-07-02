@@ -1,31 +1,32 @@
 # Current Feature
 
-Feature 15 — Home: Featured Work Section ("01 Selected Work")
+Feature 16 — Home: Recognition & Contact Sections
 
 ## Status
 
-Complete — merged to main.
+In Progress.
 
 ## Goals
 
-- Add the "01 Selected Work" section to the home page (`src/app/(site)/page.tsx`, id `work`) rendering **featured projects only** (`featured == true`, ordered) via `ProjectCard`.
-- Numbered section-index treatment ("01 Selected Work") ported from the prototype (`.sec-head h2 .idx`).
-- Clear CTA to the full `/work` index ("View all work →").
-- Data fetched server-side via `featuredProjectsQuery` (already in `queries.ts`); reuse `WorkGrid` for the responsive grid (consistent with `/work`).
-- `npm run build` passes; featured tiles render on home and link to detail pages.
+- Build `src/components/home/Recognition.tsx` (id `recognition`, "03 Recognition"): 4-up recognition stat grid (50+ awards · 2016 Cannes See It Be It · festival juries · mentor/speaker) + an "Agencies & Clients" wordmark roster row.
+- Build `src/components/home/ContactCTA.tsx` (id `contact`): full-bleed **oxblood** field, centered display line "Let's make something that *matters*." (*matters* in garnet italic), the email as a bordered link, and social links.
+- **Email and socials come from Site Settings** (one-place rule). Recognition stats + agencies roster are **static brand copy** (fixed facts, not CMS content) — same precedent as the Hero stat row and Manifesto credo.
+- Mount both on the home page in order: … featured work → recognition → contact (Footer already follows in the layout).
+- AA contrast on the oxblood contact field.
+- `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/15-home-featured-work-section.md`. **Depends on** `13` (ProjectCard), `14` (grid conventions/`WorkGrid`), `10` (`featuredProjectsQuery`). Featured set driven by Studio toggle "Show on homepage".
-- Visual source: `@context/screenshots/marina-example.png` ("SELECTED WORK" divider) + `marina-example3.png` (tiles) + prototype `#work` (marina-cuesta.html ~407–422 markup, `.sec`/`.sec-head`/`.idx` CSS ~178–181). `.idx` = `.5em`, `vertical-align:super`, garnet, sans 600.
-- New component `src/components/home/FeaturedWork.tsx` (presentational — takes `projects` prop, renders section-head + `WorkGrid`); mounted after `<Manifesto>` in the home page. Page fetches `featuredProjectsQuery` (`project` cache tag).
-- Reuse the shared `.wrap` conventions + 72px spine-gutter left-inset (`max-w-[1240px]`, `px-5 min-[981px]:pl-[72px] min-[981px]:pr-7`) and `.sec` padding (`py-[110px] max-[720px]:py-20`).
+- Full spec: `@context/features/16-home-recognition-and-contact.md`. **Depends on** Phase 1 + `10` (site settings for email/socials — already fetched in `page.tsx`).
+- Visual source: `@context/screenshots/marina-example5.png` (agencies row) + `marina-example6.png` (contact field) + prototype `#recognition` (marina-cuesta.html ~453–467 markup, `.recog-stats`/`.roster`/`.marquee` CSS ~241–248) and `.contact` (~259–267 CSS, ~480–491 markup).
+- Recognition reuses the shared `.sec` padding + `.wrap` + 72px spine-gutter left-inset (`max-w-[1240px]`, `px-5 min-[981px]:pl-[72px] min-[981px]:pr-7`). Contact is a centered full-bleed section (no left inset — text is centered).
+- Data decision: recognition stats/roster live **in-component as static const** (brand facts, not editable content) — noted per spec's "Site Settings field vs. static seed" ask. Email/socials are the only Sanity-driven bits here.
 
 ## Out of Scope
 
-- Search/filter on home (that's `/work` only, feature `14`).
-- The full `/work` index (feature `14`).
-- Reveal/hover motion — Phase 6 (`27`).
+- The `/about` and `/press` dedicated pages — Phase 4 (`20`, `21`).
+- A working contact form (CTA is email link + socials only).
+- Fade-in / reveal motion — Phase 6 (`27`).
 
 ## History
 

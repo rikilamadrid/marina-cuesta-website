@@ -1,6 +1,8 @@
+import ContactCTA from "@/components/home/ContactCTA";
 import FeaturedWork from "@/components/home/FeaturedWork";
 import Hero from "@/components/home/Hero";
 import Manifesto from "@/components/home/Manifesto";
+import Recognition from "@/components/home/Recognition";
 import {
   featuredProjectsQuery,
   siteSettingsQuery,
@@ -26,6 +28,8 @@ export default async function Home() {
       <Hero settings={settings} />
       <Manifesto />
       <FeaturedWork projects={featured} />
+      <Recognition />
+      <ContactCTA settings={settings} />
     </main>
   );
 }

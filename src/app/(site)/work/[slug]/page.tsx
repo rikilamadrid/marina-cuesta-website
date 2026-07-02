@@ -9,8 +9,7 @@ import {
   siteSettingsQuery,
 } from "@/sanity/lib/queries";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
-import { urlFor } from "@/sanity/lib/image";
-import { buildMetadata, creativeWorkJsonLd } from "@/lib/seo";
+import { buildMetadata, creativeWorkJsonLd, ogProjectImageUrl } from "@/lib/seo";
 import type { ProjectCard } from "@/types/sanity";
 
 // Single-project fetch, tolerant of a transient failure so a slow/unavailable
@@ -51,17 +50,14 @@ export async function generateMetadata({
 
   if (!project) return {};
 
-  // A project's OG image is its cover art when present, else the headshot.
-  const cover = project.cover?.asset
-    ? urlFor(project.cover).width(1200).height(630).fit("crop").url()
-    : null;
-
+  // A project's OG image is its dynamic per-project card (title/client/category
+  // on the editorial brand) — consistent and always present, cover or not.
   return buildMetadata({
     settings,
     title: project.title,
     description: project.summary,
     path: `/work/${project.slug}`,
-    image: cover,
+    image: ogProjectImageUrl(project),
   });
 }
 

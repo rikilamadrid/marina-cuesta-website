@@ -15,14 +15,19 @@ export function absoluteUrl(path = "/"): string {
   return new URL(path, `${SITE_URL}/`).toString();
 }
 
-// The one headshot (Site Settings) as an absolute URL, sized for OG (1.91:1).
-// Feature 23 will swap this for the dynamic /api/og endpoint — the *source*
-// photo stays the same (one-photo rule). Returns null when no headshot is set.
-export function ogImageUrl(
-  settings: SiteSettings | null | undefined,
-): string | null {
-  if (!settings?.headshot?.asset) return null;
-  return urlFor(settings.headshot).width(1200).height(630).fit("crop").url();
+// The dynamic OG cards (feature 23), served by `src/app/api/og/route.tsx` as
+// absolute 1200×630 URLs. The profile card is fully data-driven (the route reads
+// the one Site Settings headshot — one-photo rule); the project card takes the
+// project facts as params. These are the site-wide og:image / twitter:image.
+export function ogProfileImageUrl(): string {
+  return absoluteUrl("/api/og");
+}
+
+export function ogProjectImageUrl(project: Project): string {
+  const params = new URLSearchParams({ type: "project", title: project.title });
+  if (project.client) params.set("client", project.client);
+  if (project.category) params.set("category", project.category);
+  return absoluteUrl(`/api/og?${params.toString()}`);
 }
 
 // Alt text for the headshot, derived from name + jobTitle (no separate alt
@@ -48,10 +53,12 @@ export function buildMetadata({
   path?: string;
   image?: string | null;
 }): Metadata {
-  const ogImage = image ?? ogImageUrl(settings);
-  const images = ogImage
-    ? [{ url: ogImage, width: 1200, height: 630, alt: headshotAlt(settings) }]
-    : undefined;
+  // Default to the dynamic profile OG card; callers pass `image` to override
+  // (e.g. a project card). The alt still describes the person.
+  const ogImage = image ?? ogProfileImageUrl();
+  const images = [
+    { url: ogImage, width: 1200, height: 630, alt: headshotAlt(settings) },
+  ];
 
   return {
     ...(title !== undefined && { title }),

@@ -4,7 +4,7 @@ Feature 16 — Home: Recognition & Contact Sections
 
 ## Status
 
-In Progress.
+Complete — merged to main.
 
 ## Goals
 
@@ -29,6 +29,8 @@ In Progress.
 - Fade-in / reveal motion — Phase 6 (`27`).
 
 ## History
+
+- **2026-07-02** — Feature 16 (Home: Recognition & Contact Sections) complete. Added `src/components/home/Recognition.tsx` (id `recognition`, "03 Recognition" section-head porting the garnet super-script index) — a 4-up recognition stat grid (`50+` awards · `2016` Cannes Lions See It Be It · `Jury` festival juries · `Mentor` speaker/coach), each cell a garnet top-rule + Fraunces figure + `ink-2` label, dropping 4→2-up ≤720px — followed by an "Agencies & Clients" wordmark roster line (agencies · joined, then `—`, then clients · joined; `ink-2` separators). Recognition stats + roster are **static brand const** (fixed track-record facts, not CMS), matching the Hero stat row / Manifesto credo precedent; reuses the shared `.wrap` + 72px spine-gutter left-inset. Added `src/components/home/ContactCTA.tsx` (id `contact`): full-bleed `bg-oxblood` / `text-bone` centered closing field, Fraunces display line "Let's make something that *matters*." (*matters* in garnet italic), the **email as a bordered mailto link** and the **social links** — both Sanity-driven from Site Settings (one-place rule), each guarded so an empty settings value renders nothing. Both mounted in `src/app/(site)/page.tsx` after `<FeaturedWork>` (settings already fetched for Hero, reused here — no new query). Also whitelisted `cdn.sanity.io` in `next.config.ts` `images.remotePatterns` so `next/image` (headshot, covers, gallery) resolves Sanity assets. Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`. Fourth Phase 3 section; Footer already follows in the layout. Merged to main.
 
 - **2026-07-02** — Feature 15 (Home: Featured Work — "01 Selected Work") complete. Added `src/components/home/FeaturedWork.tsx` (presentational): a `.sec` section (id `work`, `py-[110px] max-[720px]:py-20`) with a section-head porting the prototype `.sec-head`/`.idx` — an `<h2>` "Selected Work" (Fraunces, `clamp(2rem,5vw,3.4rem)`) prefixed by a garnet super-script "01" index (`.5em`, `align-super`, `font-body` 600) — plus a "View all work →" CTA `<Link href="/work">` (uppercase, ink→garnet hover, arrow nudges on hover). Reuses the shared `.wrap` + 72px spine-gutter left-inset and the feature-14 `WorkGrid` for the responsive `3→2 (≤980px)→1 (≤680px)` grid, so home tiles are visually identical to `/work`. Renders **featured projects only**; returns `null` if the curated set is empty (rather than a bare heading). `src/app/(site)/page.tsx` now fetches `featuredProjectsQuery` (`project` cache tag) in parallel with `siteSettingsQuery` via `Promise.all` and mounts `<FeaturedWork projects={featured} />` after `<Manifesto>`. No new tokens/queries needed (`featuredProjectsQuery` predates this from feature 10). Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`; the prerendered `index.html` contains the "01 Selected Work" head, the "View all work →" CTA, a link to `/work`, and 8 unique featured `/work/<slug>` card links (matching the 8 seeded featured projects). (Browser/network verification blocked by the same env issue killing outbound HTTP; static-output inspection stood in.) Third Phase 3 route/section.
 

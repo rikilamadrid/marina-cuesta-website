@@ -1,34 +1,37 @@
 # Current Feature
 
-Feature 09 — Studio Desk Structure & Orderable Lists
+Feature 10 — GROQ Queries & Seed Content
 
 ## Status
 
-Complete — merged to main.
+Complete — merged to main. **Phase 2 done** (except Marina uploading her real headshot).
 
 ## Goals
 
-- Create `src/sanity/structure.ts` and wire it into the Studio config: group the desk as **Site Settings** (singleton, pinned to top), **Work**, **Press**.
-- Enforce the **Site Settings singleton**: hide "create new" / duplicate; open the single document directly.
-- Install and configure `@sanity/orderable-document-list` (verify current version) for drag-to-reorder on **Work** (`project`) and **Press** (`pressMention`), driving the `order` field.
-- Verify in `/studio`: Site Settings opens as one doc; Work and Press are reorderable by drag; new-doc creation is sensible.
+- Create `src/sanity/lib/queries.ts` with one exported GROQ query per data need: site settings (singleton), featured projects, all projects (ordered), single project by slug, all press mentions (ordered).
+- Type the query results (interfaces in `src/types/`) so front-end consumers are strongly typed.
+- Set up `sanityFetch` (or equivalent) with cache tags so the revalidation webhook (`25`) can target them later.
+- Seed Sanity with the real content from `@context/project-overview.md` → Seed Content: Site Settings (with a clearly-marked headshot placeholder), ~18 projects (~6–8 `featured`), 2–3 press placeholders. **Repeatable seed script** preferred — note which was used.
+- Verify a temp server component can fetch + log site settings + projects, then remove it.
 - `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/09-studio-desk-structure-and-orderable.md`. **Depends on** `06`, `07`, `08` — all three schemas now exist.
-- Desk-structure requirements: `@context/project-overview.md` → The Studio ("Desk structure").
-- Bar to clear: editing must feel **at least as easy as Behance** — friendly grouping, obvious labels, drag to order.
-- Completes the editor experience for **Phase 2** except seeding.
+- Full spec: `@context/features/10-groq-queries-and-seed-content.md`. **Depends on** `06`–`09` (schemas + structure — all done).
+- Seeding via a scripted `@sanity/client` import (needs `SANITY_API_WRITE_TOKEN` in `.env.local`, gitignored). User is providing the token.
+- Bilingual accents are **chosen, not machine-translated** — use exact seed copy (e.g. "Oda a la Mezcla").
+- Real headshot / real cover images are **not** in scope — placeholders only until the client provides them.
+- Last Phase 2 feature — after this, real content exists for Phase 3 to render.
 
 ## Out of Scope
 
-- GROQ queries and seed content — feature `10`.
-- Any front-end rendering.
-- On-demand revalidation webhook — Phase 5 (`25`).
+- The revalidate webhook itself — Phase 5 (`25`).
+- Real headshot / real cover images — placeholders only.
+- Any UI — Phase 3 begins consuming these queries.
 
 ## History
 
+- **2026-07-01** — Feature 10 (GROQ Queries & Seed Content) complete. Added `src/sanity/lib/queries.ts` (5 `defineQuery` GROQ queries: site settings singleton, featured projects, all projects, project by slug, all press — all ordered by `orderRank`), `src/types/sanity.ts` (typed result interfaces incl. `SiteSettings`/`Project`/`ProjectCard`/`PressMention`, using `@portabletext/types`), and `src/sanity/lib/fetch.ts` (typed `sanityFetch` wrapper attaching cache tags via `SANITY_TAGS` for the feature-25 revalidate webhook). Seeded via a repeatable, idempotent script `scripts/seed.mjs` + `npm run seed` (`node --env-file=.env.local`): 1 site settings, 20 projects (8 featured: Pattern Bra, Pull Out Game, Shequel, GOYA Prodigal Son, Apple, Schweppes First Time, Lululemon FEEL, Sitges), 2 press placeholders; ranks generated with `lexorank`. Declared `@sanity/client` + `lexorank` as devDependencies (script imports). **Two bugs fixed en route:** (1) Feature 09's drag-reorder wrote `orderRank` but schemas had an unused numeric `order` — switched `project`/`pressMention` to `orderRankField`/`orderRankOrdering` so Studio drag actually drives site order (user-approved). (2) Dotted document `_id`s (`project.<slug>`) are treated as private by Sanity and are **not** readable by the anonymous public role, so the tokenless site saw nothing — switched seed IDs to hyphens (`project-<slug>`) and cleaned up 22 orphaned dotted docs. Verified: `npm run build` passes; anonymous read returns 20 projects / 8 featured / 3 press (incl. one pre-existing manual press) in correct order; a temp `(site)/seed-check` server component rendered the data end-to-end, then was removed. `.env.example` gained `SANITY_API_WRITE_TOKEN` (seed-only, gitignored at runtime). Headshot intentionally left empty (client-provided) → Site Settings shows a required-field warning as the marker. Merged to main. Last Phase 2 feature — real content now exists for Phase 3 to render.
 - **2026-07-01** — Feature 09 (Studio Desk Structure & Orderable Lists) complete. Installed `@sanity/orderable-document-list@2.0.4` (peers match Sanity 6 / React 19.2 / styled-components 6). Added `src/sanity/structure.ts` (`StructureResolver`): **Site Settings** pinned to top as a fixed-ID singleton (`S.document().schemaType("siteSettings").documentId("siteSettings")` — no list/create), a divider, then **Work** (`project`) and **Press** (`pressMention`) built with `orderableDocumentListDeskItem` for drag-to-reorder driving each schema's existing `order` field. Wired `structure` into `structureTool({ structure })` in `sanity.config.ts` and enforced the singleton at the document layer: `newDocumentOptions` filters `siteSettings` out of the global "Create new" menu; `actions` strips create/duplicate/delete for `siteSettings` (leaves publish/discardChanges/restore). `npm run build` passes; `/studio` serves 200. Completes the Phase 2 editor experience except seeding. Merged to main. **Note:** published content does not yet appear on the public site — GROQ fetching (feature 10) and front-end rendering are still ahead, both out of scope here.
 - **2026-07-01** — Feature 08 (Sanity Schema: Press Mention) complete. Added `src/sanity/schema/pressMention.ts` (type `pressMention`, document, `DocumentTextIcon`): fields in editor-thinking order — `title` (Headline, required), `outlet` (required, e.g. Adweek / Cannes Lions), `type` (radio: interview / feature / award / talk / podcast), `date` (Sanity `date` type, optional, `MMMM YYYY` display), `link` (`url`, required, http/https scheme), `order` (number). Preview shows `outlet — headline` with `type` as subtitle. Reused a bare `link: string` (no shared `objects/link.ts`), consistent with project's `externalLink`. Registered in `src/sanity/schema/index.ts`. `npm run build` passes. Merged to main.
 - **2026-07-01** — Feature 07 (Sanity Schema: Project) complete. Added `src/sanity/schema/project.ts` (type `project`, document): fields in editor-thinking order — `title`, `slug` (from `title`, maxLength 96), `client`, `category` (radio: Global Brands · Multicultural · Feminist & Social · Culture & Film), `year`, `market` (multi-select checklist: US / U.S. Hispanic / Europe / Global), `role`, `summary` (required card one-liner), `body` (Portable Text `block[]`), `cover` (image, `hotspot: true`, optional → gradient-tile fallback in `13`), `gallery` (array of image **or** named `videoEmbed` `{ videoUrl }` object), `externalLink` (`url`), `featured` (boolean "Show on homepage", `initialValue: false`), `order` (number). Validation: required `title`/`client`/`category`/`summary`; http/https URL scheme on `externalLink` + gallery `videoUrl`. Preview shows `client — title`, category subtitle, cover thumbnail. `externalLink` kept as a plain `url` string (interface types it `string`); did **not** create `objects/link.ts` — press (`08`) also uses a bare `link: string`. Registered in `src/sanity/schema/index.ts`. `npm run build` passes; Studio create/edit verified. Merged to main.

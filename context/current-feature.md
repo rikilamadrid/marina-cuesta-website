@@ -1,6 +1,6 @@
 # Current Feature
 
-Feature 13 — Project Card & Gradient Tile
+Feature 14 — Work Index: Live Search & Category Filter
 
 ## Status
 
@@ -8,25 +8,29 @@ Complete — pending commit.
 
 ## Goals
 
-- Build `src/components/work/ProjectCard.tsx`: a reusable presentational tile taking a typed `ProjectCard` (+ optional `index`) as props, linking to `/work/[slug]`.
-- Category pill (top-left), client (uppercase small-caps), title (Fraunces) — bottom-left, over the tile.
-- **Has cover** → render it (`next/image` + `urlFor()`, 4/5) with a legibility scrim; **no cover** → tasteful **client-forward gradient tile** (garnet/oxblood/neutral palettes from the prototype) so the grid always looks intentional.
-- **Deterministic** palette by `(client.length + index) % PALETTES.length` (mirrors prototype) — curated, not random, and adjacent same-category tiles differ.
-- Verify by rendering a small static list of seeded projects on a temporary page; remove the temp page after. `npm run build` passes.
+- Build the `/work` route (`src/app/(site)/work/page.tsx`, inside the chrome route group) as a server component that fetches **all** projects (SSG) and passes them to a client island.
+- Build `src/components/work/WorkGrid.tsx` (presentational — renders the `ProjectCard` list + empty state) and `src/components/work/WorkControls.tsx` (`'use client'`): category filter chips (**All · Global Brands · Multicultural · Feminist & Social · Culture & Film**) + a **live search** input (matches title/client/category) filtering the grid instantly.
+- Filter + search state lives client-side; data arrives as props (no client-side Sanity fetching).
+- Empty state when no results match.
+- Responsive grid: 3-col desktop → 2-col ≤980px → 1-col ≤680px.
+- `npm run build` passes; filtering and search work in the browser.
 
 ## Notes
 
-- Full spec: `@context/features/13-project-card-and-gradient-tile.md`. **Depends on** `10` (typed project data). Consumed by home featured grid (`15`) and `/work` index (`14`) — built once, first.
-- Visual source: `@context/screenshots/marina-example3.png` + prototype `.card` CSS (marina-cuesta.html ~205–218) and `palettes` array (~547). Same-category tiles show different palettes in the screenshot → palette varies per tile (index), not by category alone.
-- Palettes ported into `@theme` as `--color-tile-*` tokens (only the new neutrals; reuses existing oxblood/garnet-deep/garnet/ink/ink-2). No magic hex in the component.
+- Full spec: `@context/features/14-work-index-search-and-filter.md`. **Depends on** `13` (ProjectCard) + `10` (queries). Uses the fixed category set from schema `07`.
+- Visual/interaction source: `@context/screenshots/marina-example3.png` + prototype `#work` (marina-cuesta.html ~408–423 markup, ~184–220 CSS, ~581–606 filter/search JS). Search matches `title + client + category`; active chip is `ink` bg / `bone` text; empty state names the failing query.
+- Route goes in the `(site)` group so it inherits Nav/Spine/Footer (the spec's `src/app/work/…` path predates the feature-05 route-group refactor). Reuse `.wrap` conventions (`max-w-[1240px]`, spine-gutter left-inset).
+- Search/filter is the site's **main interactive island** — keep client JS minimal.
 
 ## Out of Scope
 
-- The `/work` page, filtering, search — feature `14`.
-- Hover motion (lift + shadow bloom + "View project →" slide-in) — Phase 6 (`27`); a basic non-animated hover is fine here.
-- The project detail page + `/work/[slug]` route — Phase 4 (`18`); the card links there ahead of the route existing.
+- The home page's *featured* work section — feature `15` (different data set: `featured == true`).
+- Project detail pages — Phase 4 (`18`).
+- Filter/search enter/exit animation — Phase 6 (`27`).
 
 ## History
+
+- **2026-07-02** — Feature 14 (Work Index: Live Search & Category Filter) complete. Added the `/work` route at `src/app/(site)/work/page.tsx` (inside the chrome route group so it inherits Nav/Spine/Footer): a server component that fetches `allProjectsQuery` via the tagged `sanityFetch` (`project` cache tag), sets `metadata.title = "Work"`, renders a section-head `<h1>Work</h1>` (Fraunces, `clamp(2rem,5vw,3.4rem)`) in the shared `.wrap` (`max-w-[1240px]`, spine-gutter `pl-[72px]` at `min-[981px]`), and hands the projects array to a client island — prerenders **static** (SSG). Added `src/components/work/WorkControls.tsx` (`'use client'`): the site's main interactive island holding `activeCategory` + `query` state; chip row (**All · Global Brands · Multicultural · Feminist & Social · Culture & Film** — the fixed schema-07 set, active chip = `ink` bg / `bone` text, `aria-pressed`) + a live search `<input>` (`border-b`, garnet focus, magnifier svg) placeholder "Search projects, clients…". A `useMemo` filters by category **and** case-insensitive substring over `title + client + category` (mirrors the prototype). Added `src/components/work/WorkGrid.tsx` (presentational): maps `ProjectCard` over the pre-filtered list (passing `index={i}` for palette variety) in a `grid-cols-3 → 2 (≤980px) → 1 (≤680px)` grid, or a centered empty state ("No projects match **<query|category>**. Try another search."). No client-side Sanity fetching — data flows server→props. Verified: `npm run build` passes clean and `/work` prerenders as `○ (Static)`; inspecting the prerendered `.next/server/app/work.html` confirms the search input, all 5 chips (`aria-pressed`), 20 unique `/work/<slug>` card links, and all four categories render. (Browser/network verification was blocked by an environment issue killing outbound HTTP; static-output inspection stood in.) Built ahead of feature `15` (home featured grid), which reuses these grid conventions. Second Phase 3 route.
 
 - **2026-07-02** — Feature 13 (Project Card & Gradient Tile) complete. Added `src/components/work/ProjectCard.tsx`: a reusable presentational tile taking a typed `ProjectCard` (+ optional `index`) and linking to `/work/${slug}`. Renders a 4/5 `<Link>` card with a category pill (top-left, white/30 outline), client (uppercase small tracking), and title (Fraunces) stacked bottom-left. **Has cover** → `next/image` + `urlFor().width(640).height(800).fit("crop")` with a bottom-up ink scrim for legibility; **no cover** → a `linear-gradient(160deg, c1, c2)` client-forward gradient tile so the grid always reads intentional. Palette is **deterministic**: `PALETTES[(client.length + index) % 6]`, mirroring the prototype's `palettes` selection so tiles look curated (not random) and adjacent/same-category tiles differ. The 6 palettes are ported faithfully from the prototype (marina-cuesta.html ~547) as pairs of theme tokens — reusing existing `oxblood`/`garnet-deep`/`garnet`/`ink`/`ink-2` and adding 5 new tile neutrals/wine to `@theme` in `globals.css` (`--color-tile-umber/espresso/bark/wine/clay`); no magic hex in the component. Basic non-animated hover (lift + shadow via tokens, "View project →" fade) — full hover motion deferred to Phase 6 (`27`). Verified: `npm run build` passes clean; a temp `(site)/card-check` page fetched all 20 seeded projects via `allProjectsQuery` and rendered the grid (all gradient tiles, since seed covers are empty) at HTTP 200, then was removed. Built ahead of its consumers — home featured grid (`15`) and `/work` index (`14`). First Phase 3 card component.
 

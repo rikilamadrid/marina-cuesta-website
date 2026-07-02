@@ -1,4 +1,8 @@
 import { DocumentTextIcon } from "@sanity/icons";
+import {
+  orderRankField,
+  orderRankOrdering,
+} from "@sanity/orderable-document-list";
 import { defineField, defineType } from "sanity";
 
 export const pressMention = defineType({
@@ -6,6 +10,7 @@ export const pressMention = defineType({
   title: "Press Mention",
   type: "document",
   icon: DocumentTextIcon,
+  orderings: [orderRankOrdering],
   fields: [
     defineField({
       name: "title",
@@ -51,12 +56,8 @@ export const pressMention = defineType({
       description: "The link to the article, award page, or recording. Starts with https://",
       validation: (Rule) => Rule.required().uri({ scheme: ["http", "https"] }),
     }),
-    defineField({
-      name: "order",
-      title: "Sort order",
-      type: "number",
-      description: "Controls the position in the list — lower numbers show first.",
-    }),
+    // Managed by the drag-to-reorder list in the Studio (hidden from the form).
+    orderRankField({ type: "pressMention" }),
   ],
   preview: {
     select: {

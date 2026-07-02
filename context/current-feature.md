@@ -1,35 +1,37 @@
 # Current Feature
 
-Feature 21 — Press Page (`/press`)
+Feature 22 — Metadata & JSON-LD (Person + CreativeWork)
 
 ## Status
 
-Complete — branch `feature/press-page`; ready for review/merge.
+Complete — branch `feature/metadata-json-ld`; ready for review/merge. First Phase 5 feature.
 
 ## Goals
 
-- Build `src/app/(site)/press/page.tsx` (server component) fetching all press mentions (ordered) and `src/components/press/PressList.tsx` to render them.
-- Each row: outlet label (garnet small caps) · headline (Fraunces) · type · external arrow link — full-row is a link to the piece.
-- Graceful empty state; try/catch around the fetch.
-- Ensure the "Press" nav link resolves to `/press`.
-- `npm run build` passes; seeded press placeholders render as links.
+- Add `src/lib/seo.ts` with helpers for per-page metadata + JSON-LD, populated from **Site Settings**.
+- **`Person` JSON-LD** in the root layout: `name`, `jobTitle`, `image` (absolute headshot URL), `url`, `sameAs` (socials), `knowsLanguage` (en/es), `worksFor`.
+- **`CreativeWork` JSON-LD** on each `/work/[slug]`.
+- Per-page metadata via `generateMetadata` (title, description, canonical, OG) for home, `/work/[slug]`, `/about`, `/press`.
+- One-photo rule: JSON-LD `image` and `og:image` are the **same** Site Settings headshot as an absolute URL.
+- Semantic audit: one `<h1>` per page (already true); descriptive headshot alt.
+- `npm run build` passes; JSON-LD is well-formed.
 
 ## Notes
 
-- Full spec: `@context/features/21-press-page.md`.
-- Depends on Feature 08 (schema) and Feature 10 (queries/seed). Independent of About/detail.
-- Route lives at `src/app/(site)/press/page.tsx` (chrome route group) so it inherits Nav/Spine/Footer — same convention as `/about` and `/work`, not bare `src/app/press/page.tsx`.
-- Visual source: "Press & Mentions" list in `@context/screenshots/marina-example5.png` and prototype `#press` (`@context/marina-cuesta.html` ~470–478 + `.press-item` CSS ~251–256).
-- Completes **Phase 4** — all dedicated pages (`/work/[slug]`, `/about`, `/press`) now exist.
+- Full spec: `@context/features/22-metadata-and-json-ld.md`; requirements in `@context/project-overview.md` → "SEO, Google & the AI Résumé Photo".
+- Absolute base URL from `NEXT_PUBLIC_SITE_URL` (fallback `https://marinacuesta.com`); add to `.env.example`.
+- `worksFor` derived from the **last** `careerArc` entry (seed is oldest→newest, so last = current org). No `award`/`alumniOf` schema field exists → omitted rather than fabricated.
+- OG image references the headshot directly for now; the dynamic `/api/og` endpoint is the **next** feature (`23`).
 
 ## Out of Scope
 
-- Per-page metadata / OG image / JSON-LD — Phase 5 (`22`, `23`).
-- Filtering/sorting press by type.
-- Motion — Phase 6.
+- The dynamic OG image endpoint — feature `23`.
+- `sitemap.ts` / `robots.ts` — feature `24`.
+- The off-page SEO checklist doc — feature `26`.
 
 ## History
 
+- **2026-07-02** — Feature 22 (Metadata & JSON-LD) complete. Added `src/lib/seo.ts` (helpers reading Site Settings): `SITE_URL` (from `NEXT_PUBLIC_SITE_URL`, fallback `https://marinacuesta.com`, trailing-slash stripped) + `absoluteUrl()`; `ogImageUrl()` (headshot → absolute 1200×630 Sanity URL, null when unset); `buildMetadata()` (canonical via `alternates.canonical`, Open Graph + Twitter `summary_large_image`, headshot as default OG image or an explicit override); `personJsonLd()` and `creativeWorkJsonLd()`. Added `src/components/seo/JsonLd.tsx` (server component emitting a `<script type="application/ld+json">`). Root `layout.tsx` is now async: `generateMetadata` sets `metadataBase`, a title template (`%s — {name}`) with an absolute home default (`{name} — {jobTitle}`), and default OG/Twitter from the headshot; the body renders one **Person** JSON-LD (name, jobTitle, image, url, `sameAs` from socials, `knowsLanguage` `["en","es"]`, `worksFor` derived from the **last** `careerArc` entry = current org, email) — guarded so a null/failed settings fetch renders nothing. Per-page `generateMetadata` added to home (`/`, absolute title, description from `seo.description`/`shortBio`), `/about` and `/press` (replaced their static `metadata` exports), and `/work/[slug]` (title=project title, description=summary, OG image = project cover when present else headshot). `/work/[slug]` also emits **CreativeWork** JSON-LD (name, url, abstract, genre, dateCreated, creator=Person, sourceOrganization=client). Added `NEXT_PUBLIC_SITE_URL` to `.env.example`. One-photo rule honored: `image`/`og:image` both flow from the single Site Settings headshot as an absolute URL (currently omitted everywhere because the headshot is still client-provided/empty — they light up automatically once uploaded). Verified: `npm run build` passes, all routes stay `○`/`●`; prerendered HTML confirms the Person block (1× on home, correct `sameAs`/`worksFor`), CreativeWork on `/work/p-g-the-pattern-bra`, correct `<title>`/canonical on all four page types, and exactly one `<h1>` per page. Out of scope (later Phase 5): dynamic `/api/og` endpoint (`23`), `sitemap.ts`/`robots.ts` (`24`), off-page checklist (`26`).
 - **2026-07-02** — Feature 21 (Press Page `/press`) complete. Added `src/app/(site)/press/page.tsx` inside the chrome route group as a static server page fetching `allPressQuery` with the `pressMention` cache tag, wrapped in `try/catch` (fails soft to `[]`). It renders a single `<h1>` "04 Press & Mentions" (same garnet super-script index treatment as About's "02 About") and hands the ordered list to `src/components/press/PressList.tsx`. Each press row is a full-row `<a>` (`grid-cols-[auto_1fr_auto]`) porting the prototype `.press-item`: garnet small-caps `outlet` (min-w 130px), Fraunces `title` with an `ink-2` uppercase `type · date` meta line beneath (both guarded), and a `↗` arrow that nudges up-right + turns garnet on hover/focus; the whole row shifts `pl-3` on hover/focus. External http(s) links get `target=_blank` + `rel=noopener noreferrer`; the list renders a graceful "on the way" empty state when there are no mentions. Collapses to a 2-col layout ≤600px (outlet spans full width). Updated `src/components/layout/Nav.tsx` so the Press link resolves to `/press` (was the dead `#press` anchor — no home Press section exists). Completes **Phase 4** (all dedicated pages now exist). Verified: `npm run build` passes and prerenders `/press` as static (`○`); the prerendered `press.html` contains the "Press & Mentions" head and 6 press rows (all `↗` arrows) from current Sanity content.
 - **2026-07-02** — Feature 20 (About Page `/about`) complete. Added `src/app/(site)/about/page.tsx` inside the chrome route group as a static server page fetching `siteSettingsQuery` with the `siteSettings` cache tag. The page renders a single `<h1>` "02 About", a responsive editorial 4/5 portrait using the one Site Settings `headshot` via `next/image` + `urlFor()` (with the same derived alt text pattern as Hero and a placeholder fallback), the Site Settings `longBio` through the shared `PortableText` renderer with the first paragraph styled as the prototype lead, and the Site Settings `careerArc` rows as a bordered definition-list table. Updated `src/components/layout/Nav.tsx` so the About link resolves to `/about`. Verified: `npm run build` passes and prerenders `/about` as static; existing dev server at `localhost:3003/about` returns 200 with the Sanity headshot, long bio, and all 5 career rows.
 - **2026-07-02** — Feature 19 (Project Gallery & Video Embeds) complete. Added `src/components/work/ProjectMedia.tsx` and mounted it in `src/components/work/ProjectDetail.tsx` after the project write-up. The detail page now renders Sanity `gallery` items in CMS order, with image items displayed via `next/image` + `urlFor()` inside restrained editorial frames and video items parsed into responsive embeds for YouTube (`youtube-nocookie.com`) and Vimeo (`player.vimeo.com` with `dnt=1`). Empty galleries render nothing, missing image assets are ignored, and unsupported video URLs are skipped so they never leave an empty gallery section. Verified: `npm run build` passes; `/work/p-g-the-pattern-bra` returns 200 with no gallery when empty; a local untracked `/media-check` route rendered YouTube + Vimeo embed markup for verification.

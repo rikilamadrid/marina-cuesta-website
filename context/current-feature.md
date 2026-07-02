@@ -1,30 +1,31 @@
 # Current Feature
 
-Feature 17 — Portable Text Renderer
+Feature 18 — Project Detail Page (`/work/[slug]`)
 
 ## Status
 
-Complete — awaiting commit/merge.
+In Progress.
 
 ## Goals
 
-- Build a shared `src/components/ui/PortableText.tsx` that renders Sanity Portable Text (project `body`, site settings `longBio`) with editorial styling.
-- Style block types to the design system: paragraphs (Hanken 300), headings (Fraunces), emphasis/italic (garnet where appropriate), links (garnet, accessible), lists, and blockquotes.
-- Handle empty/undefined content gracefully (render nothing, not a crash).
-- Verify against seeded `longBio` on a temporary page; remove temp page.
-- `npm run build` passes.
+- Build `src/app/(site)/work/[slug]/page.tsx` (inside the chrome route group) with `generateStaticParams` from Sanity slugs (SSG) and the single-project `projectBySlugQuery`.
+- Render: project hero (category eyebrow, title, client), a meta row (client · role · year · market), `summary` as a lead, the long write-up via the shared **PortableText** renderer, and the external-link CTA when `externalLink` is present.
+- Build `src/components/work/ProjectDetail.tsx` for the layout (presentational).
+- Graceful `notFound()` for unknown slugs; try/catch around the fetch.
+- Soft editorial page treatment (paper surface, Fraunces title, garnet accents), reusing the shared `.wrap` + 72px spine-gutter left-inset.
+- `npm run build` passes; a seeded project renders at its slug.
 
 ## Notes
 
-- Full spec: `@context/features/17-portable-text-renderer.md`. **Depends on** `10` (seeded Portable Text content). First Phase 4 feature — both project detail (`18`) and About (`20`) consume it.
-- `@portabletext/react@6.2.0` is a transitive dep of `next-sanity`; `PortableText` + `PortableTextComponents` are re-exported from `next-sanity` (`export * from "@portabletext/react"`). Import from `next-sanity`, not the transitive package directly.
-- Styling target: prototype `.about-body` (marina-cuesta.html ~232–234) — `p` 15.5px / line-height 1.72 / `text-ink` / weight 300 / mb 20px; `strong` weight 600; blockquote with `em` in garnet italic (~171). The `.lead` first-paragraph display treatment is a **page-level** concern (About page owns it), NOT baked into the generic renderer.
-- Reference: `@context/screenshots/marina-example4.png` (About long-bio typography).
+- Full spec: `@context/features/18-project-detail-page.md`. **Depends on** `17` (PortableText), `10` (queries/seed — `projectBySlugQuery` already exists and projects `role`/`body`/`gallery`/`externalLink`), schema `07` (category/role/year/market).
+- Route lives at `src/app/(site)/work/[slug]/page.tsx` (not bare `app/work/...`) so it inherits Nav/Spine/Footer, matching the `/work` index precedent.
+- No dedicated detail screenshot — follow the editorial system and the About composition in `@context/screenshots/marina-example4.png` for tone.
 
 ## Out of Scope
 
-- Custom Portable Text marks for embedded images/video inside body — gallery/video handled in `19`.
-- The pages that consume it (`18` project detail, `20` About).
+- Gallery + video embeds — feature `19` (built right into this page next).
+- Per-page metadata, `CreativeWork` JSON-LD, OG image — Phase 5 (`22`, `23`).
+- Page-transition animation (soft fade home ↔ detail) — Phase 6.
 
 ## History
 

@@ -1,4 +1,5 @@
 import Hero from "@/components/home/Hero";
+import Manifesto from "@/components/home/Manifesto";
 import { siteSettingsQuery } from "@/sanity/lib/queries";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
 
@@ -13,6 +14,7 @@ export default async function Home() {
   return (
     <main>
       <Hero settings={settings} />
+      <Manifesto />
     </main>
   );
 }

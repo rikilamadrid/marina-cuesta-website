@@ -5,7 +5,7 @@ import "./globals.css";
 import JsonLd from "@/components/seo/JsonLd";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
 import { siteSettingsQuery } from "@/sanity/lib/queries";
-import { ogImageUrl, personJsonLd, SITE_URL } from "@/lib/seo";
+import { ogProfileImageUrl, personJsonLd, SITE_URL } from "@/lib/seo";
 
 const fraunces = Fraunces({
   variable: "--font-fraunces",
@@ -41,7 +41,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   const name = settings?.name ?? "Marina Cuesta";
   const description = settings?.seo?.description ?? settings?.shortBio;
-  const ogImage = ogImageUrl(settings);
+  const ogImage = ogProfileImageUrl();
 
   return {
     metadataBase: new URL(SITE_URL),
@@ -57,20 +57,18 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: name,
       url: SITE_URL,
       ...(description && { description }),
-      ...(ogImage && {
-        images: [
-          {
-            url: ogImage,
-            width: 1200,
-            height: 630,
-            alt: settings ? `${name}, ${settings.jobTitle}` : name,
-          },
-        ],
-      }),
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: settings ? `${name}, ${settings.jobTitle}` : name,
+        },
+      ],
     },
     twitter: {
       card: "summary_large_image",
-      ...(ogImage && { images: [ogImage] }),
+      images: [ogImage],
     },
   };
 }

@@ -1,6 +1,6 @@
 # Current Feature
 
-Feature 14 — Work Index: Live Search & Category Filter
+Feature 15 — Home: Featured Work Section ("01 Selected Work")
 
 ## Status
 
@@ -8,27 +8,28 @@ Complete — merged to main.
 
 ## Goals
 
-- Build the `/work` route (`src/app/(site)/work/page.tsx`, inside the chrome route group) as a server component that fetches **all** projects (SSG) and passes them to a client island.
-- Build `src/components/work/WorkGrid.tsx` (presentational — renders the `ProjectCard` list + empty state) and `src/components/work/WorkControls.tsx` (`'use client'`): category filter chips (**All · Global Brands · Multicultural · Feminist & Social · Culture & Film**) + a **live search** input (matches title/client/category) filtering the grid instantly.
-- Filter + search state lives client-side; data arrives as props (no client-side Sanity fetching).
-- Empty state when no results match.
-- Responsive grid: 3-col desktop → 2-col ≤980px → 1-col ≤680px.
-- `npm run build` passes; filtering and search work in the browser.
+- Add the "01 Selected Work" section to the home page (`src/app/(site)/page.tsx`, id `work`) rendering **featured projects only** (`featured == true`, ordered) via `ProjectCard`.
+- Numbered section-index treatment ("01 Selected Work") ported from the prototype (`.sec-head h2 .idx`).
+- Clear CTA to the full `/work` index ("View all work →").
+- Data fetched server-side via `featuredProjectsQuery` (already in `queries.ts`); reuse `WorkGrid` for the responsive grid (consistent with `/work`).
+- `npm run build` passes; featured tiles render on home and link to detail pages.
 
 ## Notes
 
-- Full spec: `@context/features/14-work-index-search-and-filter.md`. **Depends on** `13` (ProjectCard) + `10` (queries). Uses the fixed category set from schema `07`.
-- Visual/interaction source: `@context/screenshots/marina-example3.png` + prototype `#work` (marina-cuesta.html ~408–423 markup, ~184–220 CSS, ~581–606 filter/search JS). Search matches `title + client + category`; active chip is `ink` bg / `bone` text; empty state names the failing query.
-- Route goes in the `(site)` group so it inherits Nav/Spine/Footer (the spec's `src/app/work/…` path predates the feature-05 route-group refactor). Reuse `.wrap` conventions (`max-w-[1240px]`, spine-gutter left-inset).
-- Search/filter is the site's **main interactive island** — keep client JS minimal.
+- Full spec: `@context/features/15-home-featured-work-section.md`. **Depends on** `13` (ProjectCard), `14` (grid conventions/`WorkGrid`), `10` (`featuredProjectsQuery`). Featured set driven by Studio toggle "Show on homepage".
+- Visual source: `@context/screenshots/marina-example.png` ("SELECTED WORK" divider) + `marina-example3.png` (tiles) + prototype `#work` (marina-cuesta.html ~407–422 markup, `.sec`/`.sec-head`/`.idx` CSS ~178–181). `.idx` = `.5em`, `vertical-align:super`, garnet, sans 600.
+- New component `src/components/home/FeaturedWork.tsx` (presentational — takes `projects` prop, renders section-head + `WorkGrid`); mounted after `<Manifesto>` in the home page. Page fetches `featuredProjectsQuery` (`project` cache tag).
+- Reuse the shared `.wrap` conventions + 72px spine-gutter left-inset (`max-w-[1240px]`, `px-5 min-[981px]:pl-[72px] min-[981px]:pr-7`) and `.sec` padding (`py-[110px] max-[720px]:py-20`).
 
 ## Out of Scope
 
-- The home page's *featured* work section — feature `15` (different data set: `featured == true`).
-- Project detail pages — Phase 4 (`18`).
-- Filter/search enter/exit animation — Phase 6 (`27`).
+- Search/filter on home (that's `/work` only, feature `14`).
+- The full `/work` index (feature `14`).
+- Reveal/hover motion — Phase 6 (`27`).
 
 ## History
+
+- **2026-07-02** — Feature 15 (Home: Featured Work — "01 Selected Work") complete. Added `src/components/home/FeaturedWork.tsx` (presentational): a `.sec` section (id `work`, `py-[110px] max-[720px]:py-20`) with a section-head porting the prototype `.sec-head`/`.idx` — an `<h2>` "Selected Work" (Fraunces, `clamp(2rem,5vw,3.4rem)`) prefixed by a garnet super-script "01" index (`.5em`, `align-super`, `font-body` 600) — plus a "View all work →" CTA `<Link href="/work">` (uppercase, ink→garnet hover, arrow nudges on hover). Reuses the shared `.wrap` + 72px spine-gutter left-inset and the feature-14 `WorkGrid` for the responsive `3→2 (≤980px)→1 (≤680px)` grid, so home tiles are visually identical to `/work`. Renders **featured projects only**; returns `null` if the curated set is empty (rather than a bare heading). `src/app/(site)/page.tsx` now fetches `featuredProjectsQuery` (`project` cache tag) in parallel with `siteSettingsQuery` via `Promise.all` and mounts `<FeaturedWork projects={featured} />` after `<Manifesto>`. No new tokens/queries needed (`featuredProjectsQuery` predates this from feature 10). Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`; the prerendered `index.html` contains the "01 Selected Work" head, the "View all work →" CTA, a link to `/work`, and 8 unique featured `/work/<slug>` card links (matching the 8 seeded featured projects). (Browser/network verification blocked by the same env issue killing outbound HTTP; static-output inspection stood in.) Third Phase 3 route/section.
 
 - **2026-07-02** — Feature 14 (Work Index: Live Search & Category Filter) complete. Added the `/work` route at `src/app/(site)/work/page.tsx` (inside the chrome route group so it inherits Nav/Spine/Footer): a server component that fetches `allProjectsQuery` via the tagged `sanityFetch` (`project` cache tag), sets `metadata.title = "Work"`, renders a section-head `<h1>Work</h1>` (Fraunces, `clamp(2rem,5vw,3.4rem)`) in the shared `.wrap` (`max-w-[1240px]`, spine-gutter `pl-[72px]` at `min-[981px]`), and hands the projects array to a client island — prerenders **static** (SSG). Added `src/components/work/WorkControls.tsx` (`'use client'`): the site's main interactive island holding `activeCategory` + `query` state; chip row (**All · Global Brands · Multicultural · Feminist & Social · Culture & Film** — the fixed schema-07 set, active chip = `ink` bg / `bone` text, `aria-pressed`) + a live search `<input>` (`border-b`, garnet focus, magnifier svg) placeholder "Search projects, clients…". A `useMemo` filters by category **and** case-insensitive substring over `title + client + category` (mirrors the prototype). Added `src/components/work/WorkGrid.tsx` (presentational): maps `ProjectCard` over the pre-filtered list (passing `index={i}` for palette variety) in a `grid-cols-3 → 2 (≤980px) → 1 (≤680px)` grid, or a centered empty state ("No projects match **<query|category>**. Try another search."). No client-side Sanity fetching — data flows server→props. Verified: `npm run build` passes clean and `/work` prerenders as `○ (Static)`; inspecting the prerendered `.next/server/app/work.html` confirms the search input, all 5 chips (`aria-pressed`), 20 unique `/work/<slug>` card links, and all four categories render. (Browser/network verification was blocked by an environment issue killing outbound HTTP; static-output inspection stood in.) Built ahead of feature `15` (home featured grid), which reuses these grid conventions. Second Phase 3 route.
 

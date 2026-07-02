@@ -35,7 +35,10 @@ export default function Hero({ settings }: { settings: SiteSettings }) {
       id="top"
       className="relative flex min-h-screen flex-col justify-center py-[80px] pt-[140px]"
     >
-      <div className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:px-7">
+      {/* Left padding widens to a spine gutter at >=981px (where the fixed
+          vertical nameplate appears) so the spine sits in margin, not over the
+          type. This is the shared left-inset for Phase 3 sections. */}
+      <div className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <div className="mb-[34px] flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-garnet before:inline-block before:h-px before:w-[26px] before:bg-garnet before:content-['']">
           Executive Creative Director · Directora Creativa
         </div>

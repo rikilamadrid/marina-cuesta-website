@@ -1,8 +1,16 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import JsonLd from "@/components/seo/JsonLd";
 import ProjectDetail from "@/components/work/ProjectDetail";
-import { allProjectsQuery, projectBySlugQuery } from "@/sanity/lib/queries";
+import {
+  allProjectsQuery,
+  projectBySlugQuery,
+  siteSettingsQuery,
+} from "@/sanity/lib/queries";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
+import { urlFor } from "@/sanity/lib/image";
+import { buildMetadata, creativeWorkJsonLd } from "@/lib/seo";
 import type { ProjectCard } from "@/types/sanity";
 
 // Single-project fetch, tolerant of a transient failure so a slow/unavailable
@@ -17,6 +25,44 @@ async function getProject(slug: string) {
   } catch {
     return null;
   }
+}
+
+async function getSettings() {
+  try {
+    return await sanityFetch({
+      query: siteSettingsQuery,
+      tags: [SANITY_TAGS.siteSettings],
+    });
+  } catch {
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const [project, settings] = await Promise.all([
+    getProject(slug),
+    getSettings(),
+  ]);
+
+  if (!project) return {};
+
+  // A project's OG image is its cover art when present, else the headshot.
+  const cover = project.cover?.asset
+    ? urlFor(project.cover).width(1200).height(630).fit("crop").url()
+    : null;
+
+  return buildMetadata({
+    settings,
+    title: project.title,
+    description: project.summary,
+    path: `/work/${project.slug}`,
+    image: cover,
+  });
 }
 
 // Pre-render every project at build time (SSG). Slugs come from the same tagged
@@ -40,12 +86,16 @@ export default async function ProjectPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = await getProject(slug);
+  const [project, settings] = await Promise.all([
+    getProject(slug),
+    getSettings(),
+  ]);
 
   if (!project) notFound();
 
   return (
     <main>
+      <JsonLd data={creativeWorkJsonLd(project, settings)} />
       <ProjectDetail project={project} />
     </main>
   );

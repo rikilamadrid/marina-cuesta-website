@@ -2,12 +2,24 @@ import type { Metadata } from "next";
 
 import PressList from "@/components/press/PressList";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
-import { allPressQuery } from "@/sanity/lib/queries";
+import { allPressQuery, siteSettingsQuery } from "@/sanity/lib/queries";
+import { buildMetadata } from "@/lib/seo";
 import type { PressMention } from "@/types/sanity";
 
-export const metadata: Metadata = {
-  title: "Press",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await sanityFetch({
+    query: siteSettingsQuery,
+    tags: [SANITY_TAGS.siteSettings],
+  });
+  return buildMetadata({
+    settings,
+    title: "Press",
+    description: `Interviews, features, awards, and talks featuring ${
+      settings?.name ?? "Marina Cuesta"
+    }.`,
+    path: "/press",
+  });
+}
 
 export default async function PressPage() {
   let press: PressMention[] = [];

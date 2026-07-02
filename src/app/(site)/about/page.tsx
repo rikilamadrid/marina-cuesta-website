@@ -5,11 +5,21 @@ import PortableText from "@/components/ui/PortableText";
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
 import { urlFor } from "@/sanity/lib/image";
 import { siteSettingsQuery } from "@/sanity/lib/queries";
+import { buildMetadata } from "@/lib/seo";
 import type { CareerStep, SiteSettings } from "@/types/sanity";
 
-export const metadata: Metadata = {
-  title: "About",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await sanityFetch({
+    query: siteSettingsQuery,
+    tags: [SANITY_TAGS.siteSettings],
+  });
+  return buildMetadata({
+    settings,
+    title: "About",
+    description: settings?.seo?.description ?? settings?.shortBio,
+    path: "/about",
+  });
+}
 
 export default async function AboutPage() {
   const settings = await sanityFetch({

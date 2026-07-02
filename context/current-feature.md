@@ -1,35 +1,34 @@
 # Current Feature
 
-Feature 16 — Home: Recognition & Contact Sections
+Feature 17 — Portable Text Renderer
 
 ## Status
 
-Complete — merged to main.
+Complete — awaiting commit/merge.
 
 ## Goals
 
-- Build `src/components/home/Recognition.tsx` (id `recognition`, "03 Recognition"): 4-up recognition stat grid (50+ awards · 2016 Cannes See It Be It · festival juries · mentor/speaker) + an "Agencies & Clients" wordmark roster row.
-- Build `src/components/home/ContactCTA.tsx` (id `contact`): full-bleed **oxblood** field, centered display line "Let's make something that *matters*." (*matters* in garnet italic), the email as a bordered link, and social links.
-- **Email and socials come from Site Settings** (one-place rule). Recognition stats + agencies roster are **static brand copy** (fixed facts, not CMS content) — same precedent as the Hero stat row and Manifesto credo.
-- Mount both on the home page in order: … featured work → recognition → contact (Footer already follows in the layout).
-- AA contrast on the oxblood contact field.
+- Build a shared `src/components/ui/PortableText.tsx` that renders Sanity Portable Text (project `body`, site settings `longBio`) with editorial styling.
+- Style block types to the design system: paragraphs (Hanken 300), headings (Fraunces), emphasis/italic (garnet where appropriate), links (garnet, accessible), lists, and blockquotes.
+- Handle empty/undefined content gracefully (render nothing, not a crash).
+- Verify against seeded `longBio` on a temporary page; remove temp page.
 - `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/16-home-recognition-and-contact.md`. **Depends on** Phase 1 + `10` (site settings for email/socials — already fetched in `page.tsx`).
-- Visual source: `@context/screenshots/marina-example5.png` (agencies row) + `marina-example6.png` (contact field) + prototype `#recognition` (marina-cuesta.html ~453–467 markup, `.recog-stats`/`.roster`/`.marquee` CSS ~241–248) and `.contact` (~259–267 CSS, ~480–491 markup).
-- Recognition reuses the shared `.sec` padding + `.wrap` + 72px spine-gutter left-inset (`max-w-[1240px]`, `px-5 min-[981px]:pl-[72px] min-[981px]:pr-7`). Contact is a centered full-bleed section (no left inset — text is centered).
-- Data decision: recognition stats/roster live **in-component as static const** (brand facts, not editable content) — noted per spec's "Site Settings field vs. static seed" ask. Email/socials are the only Sanity-driven bits here.
+- Full spec: `@context/features/17-portable-text-renderer.md`. **Depends on** `10` (seeded Portable Text content). First Phase 4 feature — both project detail (`18`) and About (`20`) consume it.
+- `@portabletext/react@6.2.0` is a transitive dep of `next-sanity`; `PortableText` + `PortableTextComponents` are re-exported from `next-sanity` (`export * from "@portabletext/react"`). Import from `next-sanity`, not the transitive package directly.
+- Styling target: prototype `.about-body` (marina-cuesta.html ~232–234) — `p` 15.5px / line-height 1.72 / `text-ink` / weight 300 / mb 20px; `strong` weight 600; blockquote with `em` in garnet italic (~171). The `.lead` first-paragraph display treatment is a **page-level** concern (About page owns it), NOT baked into the generic renderer.
+- Reference: `@context/screenshots/marina-example4.png` (About long-bio typography).
 
 ## Out of Scope
 
-- The `/about` and `/press` dedicated pages — Phase 4 (`20`, `21`).
-- A working contact form (CTA is email link + socials only).
-- Fade-in / reveal motion — Phase 6 (`27`).
+- Custom Portable Text marks for embedded images/video inside body — gallery/video handled in `19`.
+- The pages that consume it (`18` project detail, `20` About).
 
 ## History
 
+- **2026-07-02** — Feature 17 (Portable Text Renderer) complete. Added shared `src/components/ui/PortableText.tsx` — a thin wrapper over `next-sanity`'s re-exported `PortableText` (transitive `@portabletext/react@6.2.0`) with a `components: PortableTextComponents` map styling every block/mark/list type to the design system: `normal` paragraphs (Hanken `font-light` / `text-[15.5px]` / `leading-[1.72]` / `text-ink`, `mb-5 last:mb-0`, porting prototype `.about-body`), `h2`/`h3`/`h4` in Fraunces (`font-display`, clamped, `first:mt-0`), a garnet left-rule italic `blockquote`, marks `strong` (`font-semibold`), `em` (`italic text-garnet`), and `link` (garnet underline, `focus-visible` outline, `target=_blank`+`rel=noopener` only for `http(s)` hrefs), plus bullet/number lists with `marker:text-garnet`. Takes `value?: PortableTextBlock[]` + optional `className` (wrapper `<div>`); **returns `null` when value is empty/undefined** (no crash). The page-level display `.lead` first-paragraph treatment is intentionally left to call sites (About owns it), keeping the renderer a neutral baseline. Verified: temp `(site)/pt-check` page rendered the seeded `longBio` (real prose, no marks — mark/list styles compile but aren't exercised by seed data) as styled paragraphs and rendered nothing for the `[]`/`undefined` cases; removed. `npm run build` passes clean, all routes still `○ (Static)`. First Phase 4 feature — consumed by project detail (`18`) and About (`20`).
 - **2026-07-02** — Feature 16 (Home: Recognition & Contact Sections) complete. Added `src/components/home/Recognition.tsx` (id `recognition`, "03 Recognition" section-head porting the garnet super-script index) — a 4-up recognition stat grid (`50+` awards · `2016` Cannes Lions See It Be It · `Jury` festival juries · `Mentor` speaker/coach), each cell a garnet top-rule + Fraunces figure + `ink-2` label, dropping 4→2-up ≤720px — followed by an "Agencies & Clients" wordmark roster line (agencies · joined, then `—`, then clients · joined; `ink-2` separators). Recognition stats + roster are **static brand const** (fixed track-record facts, not CMS), matching the Hero stat row / Manifesto credo precedent; reuses the shared `.wrap` + 72px spine-gutter left-inset. Added `src/components/home/ContactCTA.tsx` (id `contact`): full-bleed `bg-oxblood` / `text-bone` centered closing field, Fraunces display line "Let's make something that *matters*." (*matters* in garnet italic), the **email as a bordered mailto link** and the **social links** — both Sanity-driven from Site Settings (one-place rule), each guarded so an empty settings value renders nothing. Both mounted in `src/app/(site)/page.tsx` after `<FeaturedWork>` (settings already fetched for Hero, reused here — no new query). Also whitelisted `cdn.sanity.io` in `next.config.ts` `images.remotePatterns` so `next/image` (headshot, covers, gallery) resolves Sanity assets. Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`. Fourth Phase 3 section; Footer already follows in the layout. Merged to main.
 
 - **2026-07-02** — Feature 15 (Home: Featured Work — "01 Selected Work") complete. Added `src/components/home/FeaturedWork.tsx` (presentational): a `.sec` section (id `work`, `py-[110px] max-[720px]:py-20`) with a section-head porting the prototype `.sec-head`/`.idx` — an `<h2>` "Selected Work" (Fraunces, `clamp(2rem,5vw,3.4rem)`) prefixed by a garnet super-script "01" index (`.5em`, `align-super`, `font-body` 600) — plus a "View all work →" CTA `<Link href="/work">` (uppercase, ink→garnet hover, arrow nudges on hover). Reuses the shared `.wrap` + 72px spine-gutter left-inset and the feature-14 `WorkGrid` for the responsive `3→2 (≤980px)→1 (≤680px)` grid, so home tiles are visually identical to `/work`. Renders **featured projects only**; returns `null` if the curated set is empty (rather than a bare heading). `src/app/(site)/page.tsx` now fetches `featuredProjectsQuery` (`project` cache tag) in parallel with `siteSettingsQuery` via `Promise.all` and mounts `<FeaturedWork projects={featured} />` after `<Manifesto>`. No new tokens/queries needed (`featuredProjectsQuery` predates this from feature 10). Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`; the prerendered `index.html` contains the "01 Selected Work" head, the "View all work →" CTA, a link to `/work`, and 8 unique featured `/work/<slug>` card links (matching the 8 seeded featured projects). (Browser/network verification blocked by the same env issue killing outbound HTTP; static-output inspection stood in.) Third Phase 3 route/section.

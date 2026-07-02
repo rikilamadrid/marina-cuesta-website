@@ -16,6 +16,15 @@
   --color-garnet-deep: #7c0b1b;
   --color-oxblood: #3d0d17;
 
+  /* Work-tile gradient stops (ported from prototype .card palettes) — the
+     new neutrals/wine here pair with the accent + ink tokens above to make
+     the 6 curated tile gradients in ProjectCard. */
+  --color-tile-umber: #4a433d;
+  --color-tile-espresso: #2a2320;
+  --color-tile-bark: #23201d;
+  --color-tile-wine: #4a0e18;
+  --color-tile-clay: #8a2436;
+
   /* Type — Fraunces (display) + Hanken Grotesk (body), loaded via next/font */
   --font-display: var(--font-fraunces), Georgia, serif;
   --font-body: var(--font-hanken), system-ui, -apple-system, sans-serif;

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Fragment } from "react";
 
 import PortableText from "@/components/ui/PortableText";
+import ProjectMedia from "@/components/work/ProjectMedia";
 import type { Project } from "@/types/sanity";
 
 type Props = {
@@ -27,7 +28,7 @@ function Meta({ label, children }: { label: string; children?: React.ReactNode }
 // Editorial project detail layout (presentational). Typographic hero — cover /
 // gallery / video visuals belong to feature 19, which builds into this page.
 export default function ProjectDetail({ project }: Props) {
-  const { title, client, category, role, year, market, summary, body, externalLink } =
+  const { title, client, category, role, year, market, summary, body, gallery, externalLink } =
     project;
 
   return (
@@ -76,21 +77,25 @@ export default function ProjectDetail({ project }: Props) {
           )}
 
           <PortableText value={body} />
+        </div>
 
-          {externalLink && (
+        <ProjectMedia items={gallery} projectTitle={title} client={client} />
+
+        {externalLink && (
+          <div className="mt-12 max-w-[68ch]">
             <a
               href={externalLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group mt-12 inline-flex items-center gap-2.5 rounded-full border border-ink px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-ink no-underline transition-colors duration-300 ease-[var(--ease)] hover:border-garnet hover:bg-garnet hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-garnet"
+              className="group inline-flex items-center gap-2.5 rounded-full border border-ink px-6 py-3 text-[12px] font-semibold uppercase tracking-[0.14em] text-ink no-underline transition-colors duration-300 ease-[var(--ease)] hover:border-garnet hover:bg-garnet hover:text-bone focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-garnet"
             >
               View the full project
               <span className="transition-transform duration-300 ease-[var(--ease)] group-hover:translate-x-0.5">
                 ↗
               </span>
             </a>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </article>
   );

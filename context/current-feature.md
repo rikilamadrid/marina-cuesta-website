@@ -1,34 +1,38 @@
 # Current Feature
 
-Feature 18 — Project Detail Page (`/work/[slug]`)
+Feature 19 — Project Gallery & Video Embeds
 
 ## Status
 
-Complete — merged to main.
+Complete — branch `feature/project-gallery-video`; ready for review/merge.
 
 ## Goals
 
-- Build `src/app/(site)/work/[slug]/page.tsx` (inside the chrome route group) with `generateStaticParams` from Sanity slugs (SSG) and the single-project `projectBySlugQuery`.
-- Render: project hero (category eyebrow, title, client), a meta row (client · role · year · market), `summary` as a lead, the long write-up via the shared **PortableText** renderer, and the external-link CTA when `externalLink` is present.
-- Build `src/components/work/ProjectDetail.tsx` for the layout (presentational).
-- Graceful `notFound()` for unknown slugs; try/catch around the fetch.
-- Soft editorial page treatment (paper surface, Fraunces title, garnet accents), reusing the shared `.wrap` + 72px spine-gutter left-inset.
-- `npm run build` passes; a seeded project renders at its slug.
+- Extend the project detail page to render the `gallery` array in CMS order.
+- Render Sanity gallery images with `next/image` + `urlFor()`, lazy-loaded below the fold.
+- Render video items (`{ videoUrl }`) as responsive YouTube/Vimeo embeds with privacy-friendly player URLs where available.
+- Keep the layout editorial and restrained, consistent with the paper-surface project detail treatment and the About composition reference.
+- Handle projects with no gallery by rendering nothing, and handle unsupported video URLs gracefully.
+- `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/18-project-detail-page.md`. **Depends on** `17` (PortableText), `10` (queries/seed — `projectBySlugQuery` already exists and projects `role`/`body`/`gallery`/`externalLink`), schema `07` (category/role/year/market).
-- Route lives at `src/app/(site)/work/[slug]/page.tsx` (not bare `app/work/...`) so it inherits Nav/Spine/Footer, matching the `/work` index precedent.
-- No dedicated detail screenshot — follow the editorial system and the About composition in `@context/screenshots/marina-example4.png` for tone.
+- Full spec: `@context/features/19-project-gallery-and-video.md`.
+- Depends on Feature 18: `src/app/(site)/work/[slug]/page.tsx` and `src/components/work/ProjectDetail.tsx` already exist.
+- The Sanity `projectBySlugQuery` already projects `gallery`; `src/types/sanity.ts` already defines `GalleryItem` and `VideoEmbed`.
+- Seeded projects do not include real gallery media, so verification used build/type checks plus a local untracked temporary `/media-check` route with YouTube + Vimeo items.
+- `npm run build` passes. Local route checks on the existing dev server at `localhost:3003`: `/work/p-g-the-pattern-bra` returns 200 with no gallery when empty; the local untracked `/media-check` route returns 200 and renders `youtube-nocookie.com` + Vimeo `dnt=1` embeds.
+- No schema changes planned unless implementation discovers missing editor-facing data.
 
 ## Out of Scope
 
-- Gallery + video embeds — feature `19` (built right into this page next).
+- Lightbox / fullscreen gallery interaction.
 - Per-page metadata, `CreativeWork` JSON-LD, OG image — Phase 5 (`22`, `23`).
 - Page-transition animation (soft fade home ↔ detail) — Phase 6.
 
 ## History
 
+- **2026-07-02** — Feature 19 (Project Gallery & Video Embeds) complete. Added `src/components/work/ProjectMedia.tsx` and mounted it in `src/components/work/ProjectDetail.tsx` after the project write-up. The detail page now renders Sanity `gallery` items in CMS order, with image items displayed via `next/image` + `urlFor()` inside restrained editorial frames and video items parsed into responsive embeds for YouTube (`youtube-nocookie.com`) and Vimeo (`player.vimeo.com` with `dnt=1`). Empty galleries render nothing, missing image assets are ignored, and unsupported video URLs are skipped so they never leave an empty gallery section. Verified: `npm run build` passes; `/work/p-g-the-pattern-bra` returns 200 with no gallery when empty; a local untracked `/media-check` route rendered YouTube + Vimeo embed markup for verification.
 - **2026-07-02** — Feature 18 (Project Detail Page `/work/[slug]`) complete. Added the SSG project detail route at `src/app/(site)/work/[slug]/page.tsx` inside the chrome route group, using `generateStaticParams` from `allProjectsQuery` and a guarded single-project fetch via `projectBySlugQuery` + `notFound()` for unknown or failed slugs. Added presentational `src/components/work/ProjectDetail.tsx` with the editorial paper treatment: back-to-work link, garnet category eyebrow, Fraunces title, meta row (`client` / `role` / `year` / `market`), summary lead, shared Portable Text body renderer, and external CTA when `externalLink` exists. Reuses the shared `.wrap` / 72px spine-gutter convention and leaves gallery/video to feature `19`, metadata/JSON-LD to Phase 5, and page-transition motion to Phase 6. Verified: `npm run build` passes; `/work/[slug]` prerenders as SSG with 20 seeded paths. Merged to main.
 - **2026-07-02** — Feature 17 (Portable Text Renderer) complete. Added shared `src/components/ui/PortableText.tsx` — a thin wrapper over `next-sanity`'s re-exported `PortableText` (transitive `@portabletext/react@6.2.0`) with a `components: PortableTextComponents` map styling every block/mark/list type to the design system: `normal` paragraphs (Hanken `font-light` / `text-[15.5px]` / `leading-[1.72]` / `text-ink`, `mb-5 last:mb-0`, porting prototype `.about-body`), `h2`/`h3`/`h4` in Fraunces (`font-display`, clamped, `first:mt-0`), a garnet left-rule italic `blockquote`, marks `strong` (`font-semibold`), `em` (`italic text-garnet`), and `link` (garnet underline, `focus-visible` outline, `target=_blank`+`rel=noopener` only for `http(s)` hrefs), plus bullet/number lists with `marker:text-garnet`. Takes `value?: PortableTextBlock[]` + optional `className` (wrapper `<div>`); **returns `null` when value is empty/undefined** (no crash). The page-level display `.lead` first-paragraph treatment is intentionally left to call sites (About owns it), keeping the renderer a neutral baseline. Verified: temp `(site)/pt-check` page rendered the seeded `longBio` (real prose, no marks — mark/list styles compile but aren't exercised by seed data) as styled paragraphs and rendered nothing for the `[]`/`undefined` cases; removed. `npm run build` passes clean, all routes still `○ (Static)`. First Phase 4 feature — consumed by project detail (`18`) and About (`20`).
 - **2026-07-02** — Feature 16 (Home: Recognition & Contact Sections) complete. Added `src/components/home/Recognition.tsx` (id `recognition`, "03 Recognition" section-head porting the garnet super-script index) — a 4-up recognition stat grid (`50+` awards · `2016` Cannes Lions See It Be It · `Jury` festival juries · `Mentor` speaker/coach), each cell a garnet top-rule + Fraunces figure + `ink-2` label, dropping 4→2-up ≤720px — followed by an "Agencies & Clients" wordmark roster line (agencies · joined, then `—`, then clients · joined; `ink-2` separators). Recognition stats + roster are **static brand const** (fixed track-record facts, not CMS), matching the Hero stat row / Manifesto credo precedent; reuses the shared `.wrap` + 72px spine-gutter left-inset. Added `src/components/home/ContactCTA.tsx` (id `contact`): full-bleed `bg-oxblood` / `text-bone` centered closing field, Fraunces display line "Let's make something that *matters*." (*matters* in garnet italic), the **email as a bordered mailto link** and the **social links** — both Sanity-driven from Site Settings (one-place rule), each guarded so an empty settings value renders nothing. Both mounted in `src/app/(site)/page.tsx` after `<FeaturedWork>` (settings already fetched for Hero, reused here — no new query). Also whitelisted `cdn.sanity.io` in `next.config.ts` `images.remotePatterns` so `next/image` (headshot, covers, gallery) resolves Sanity assets. Verified: `npm run build` passes clean and `/` still prerenders `○ (Static)`. Fourth Phase 3 section; Footer already follows in the layout. Merged to main.

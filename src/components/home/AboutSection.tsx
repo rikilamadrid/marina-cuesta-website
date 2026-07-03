@@ -17,7 +17,7 @@ export default function AboutSection({
   priority = false,
 }: Props) {
   return (
-    <section id="about" className="bg-bone py-[110px] max-[720px]:py-24">
+    <section id="about" className="bg-surface-alt py-[110px] max-[720px]:py-24">
       <Reveal className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <header className="mb-[78px] max-[720px]:mb-12">
           <Heading className="font-display text-[clamp(2.6rem,7vw,5.2rem)] font-normal leading-none tracking-[-0.015em] text-ink">

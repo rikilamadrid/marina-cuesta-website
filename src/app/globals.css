@@ -5,6 +5,10 @@
   --color-paper: #faf7f2;
   --color-bone: #f3ece3;
   --color-blush: #ebd9d2;
+  /* Alternate warm surface (About band, project-card base). Splits out from
+     `bone` so it can invert to a raised dark in dark mode while `bone` stays
+     light for its text-on-oxblood role. Light value == bone (visual no-op). */
+  --color-surface-alt: #f3ece3;
 
   /* Ink */
   --color-ink: #1a1714;
@@ -35,6 +39,33 @@
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
+/* ─────────────────────────────────────────────────────────────────────────
+   Dark theme (Feature 32) — "warm dimmed monograph". Remap the semantic
+   tokens; components keep using the semantic names, no per-component color
+   edits. The attribute selector out-specifies the `:root` @theme defaults.
+
+   NOT overridden (they read correctly in both themes): `bone` (light
+   text-on-oxblood — must stay light), `blush` (light accent/eyebrow on
+   oxblood), `oxblood` (the signature always-dark band), `tile-*` (already
+   dark work-tile gradients). `surface-alt` inverts here; the two `bg-ink`
+   pills switch their text to `text-paper` at the call site.
+   ──────────────────────────────────────────────────────────────────────── */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-paper: #17120f; /* warm near-black page surface */
+  --color-surface-alt: #211a15; /* raised warm surface (About band, cards) */
+
+  --color-ink: #efe7dc; /* warm off-white body text */
+  --color-ink-2: #a99e92; /* muted warm text */
+  --color-line: #34291f; /* subtle warm border on dark */
+
+  --color-garnet: #cc3a52; /* accent, brightened to read on dark */
+  --color-garnet-deep: #b0304a; /* eyebrow rules/strokes, brightened for dark */
+
+  --shadow: 0 24px 50px -24px rgba(0, 0, 0, 0.7);
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -46,6 +77,16 @@ body {
   font-weight: 400;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+/* Theme cross-fade — zero-specificity so any component's own `transition-*`
+   utility still wins; only fires when a token-driven color changes (toggle),
+   not on first paint. Killed by the reduced-motion safety net below. */
+:where(body *) {
+  transition:
+    background-color 0.45s var(--ease),
+    border-color 0.45s var(--ease),
+    color 0.45s var(--ease);
 }
 
 ::selection {

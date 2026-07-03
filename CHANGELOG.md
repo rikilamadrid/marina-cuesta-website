@@ -1,10 +1,48 @@
 # Changelog
 
-The running build log for Marina Cuesta's site — one entry per completed feature/fix, newest first. Each entry records what shipped, why, and how it was verified.
+All notable changes to this project are documented here. The format is based on [Keep a Changelog](https://keepachangelog.com/), and this project adheres to [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`).
 
-When a feature is merged to `main`, append its entry to the top of this list (this replaces the old `context/current-feature.md` → History section). Keep `context/current-feature.md` for the *active* task only.
+- **[Unreleased]** collects changes merged to `main` but not yet released.
+- On release, move those entries into a new dated version section and run the matching `npm run version:*` script (see CLAUDE.md → *Versioning & releases*).
+- The **Detailed build log** below preserves the original per-feature history and continues to be maintained per CLAUDE.md's workflow (prepend an entry when a feature merges).
 
 ---
+
+## [Unreleased]
+
+*Nothing yet.*
+
+## [1.0.0] — 2026-07-03
+
+First public release — Marina Cuesta's portfolio, live at `marinacuesta.com`.
+
+### Added
+
+- Next.js 16 App Router + TypeScript (strict) + Tailwind v4 foundation: design tokens, Fraunces + Hanken Grotesk fonts, layout shell, responsive Nav (with accessible mobile menu), decorative Spine, and Footer.
+- Sanity CMS: embedded Studio at `/studio`, Site Settings singleton, Project and Press Mention schemas, drag-to-reorder desk structure, and GROQ queries with seed content.
+- Home page sections: Hero, Manifesto, Featured Work, Recognition, Contact CTA, plus About and Press home sections.
+- Pages: `/work` (live search + category filter), `/work/[slug]` detail with image gallery and YouTube/Vimeo embeds, `/about`, and `/press`; shared Portable Text renderer and project cards with deterministic gradient tiles.
+- SEO: per-page metadata + Person/CreativeWork JSON-LD, dynamic OG image cards (`/api/og`), `sitemap.ts`, `robots.ts`, on-demand revalidation webhook (`/api/revalidate`), and an off-page SEO checklist.
+- Motion pass: mask-up hero reveal, scroll fade/rise, and scroll-driven nav color inversion — all respecting `prefers-reduced-motion`.
+- Dark / light mode toggle with a warm dimmed monograph palette.
+- Deployment: Vercel hosting + GitHub Actions CI gate (typecheck / lint / build), a `DEPLOY.md` runbook, and a `HANDOFF.md` owner guide.
+
+### Changed
+
+- Accessibility pass: skip link, visible focus rings, landmark roles, and a disclosure-pattern accessible mobile menu.
+- Performance pass: image/font/LCP optimization (Lighthouse — Performance 95, Accessibility 96, Best Practices 100, SEO 100).
+
+### Fixed
+
+- Press dates rolling back a month in US timezones (now parsed and formatted in UTC).
+- Vercel/CI install failures: forced the public npm registry (the lockfile had pinned tarballs to a private Azure feed) and added the missing `lightningcss-linux-x64-gnu` optional dependency.
+- Hero content colliding with the fixed Spine nameplate (reserved a 72px spine gutter).
+
+---
+
+## Detailed build log
+
+*Per-feature history (newest first) — preserved from the original CHANGELOG. When a feature merges to `main`, prepend its entry to the top of this list (this replaces the old `context/current-feature.md` → History section). Keep `context/current-feature.md` for the active task only.*
 
 - **2026-07-03** — Feature 32 (Dark / Light Mode Toggle) complete and merged to `main`. Added an accessible editorial theme toggle in the nav (`src/components/layout/ThemeToggle.tsx`) — a real `<button>` with the state in `aria-label`, a "contrast" half-filled glyph (not a sun/moon box), `text-current` so it inverts with the nav over dark sections, and `cursor-pointer` on hover. It reads `<html data-theme>` via **`useSyncExternalStore`** (not `useEffect`+`setState`, which trips the `react-hooks/set-state-in-effect` rule the CI gate enforces) and on click mutates the attribute + `localStorage` and dispatches a `themechange` event. **Dark palette by token remap:** a single `:root[data-theme="dark"]` block in `globals.css` remaps the semantic tokens to a *warm dimmed monograph* (warm near-black paper, warm off-white text, brightened garnet) — components keep their semantic names, no per-component color edits. Split out a new `--color-surface-alt` token (light value == `bone`, a visual no-op) so `bone` stays light for its text-on-oxblood role while the About band + project-card base darken; the two `bg-ink` pills (WorkControls active chip, skip link) switch `text-bone`→`text-paper` at the call site. `blush`/`oxblood`/`tile-*` intentionally not overridden (already read in both themes). **No flash of wrong theme:** an inline pre-paint script in `layout.tsx` (`<head>`, with `suppressHydrationWarning` on `<html>`) sets `data-theme` before first paint — stored choice wins, else follows OS `prefers-color-scheme`, default light. `color-scheme` set for form controls/scrollbars; a zero-specificity `:where(body *)` cross-fade transition (killed by the reduced-motion safety net) softens the switch. Verified: `typecheck` + `lint` + `build` all clean; 31 routes prerender unchanged. **Still to eyeball:** live-browser click-through with `npm run start` (sandbox blocked the local server during the build). Second Phase 6 feature.
 - **2026-07-03** — Feature 31 (Vercel Deploy & CI/CD) — code deliverables complete and merged to `main`. Added `.github/workflows/ci.yml`: a verification-only gate on PR→`main` and push→`main` (`npm ci` → `typecheck` → `lint` → `build`; Node from `.nvmrc` = 22; public Sanity config pulled from repo Variables with `dnzlfg96` fallback) — it does not deploy (Vercel owns preview-per-PR + prod-on-merge; no duplication). Added a `typecheck` script (`tsc --noEmit`) to `package.json`. Added `DEPLOY.md`, the owner runbook: Vercel project + env vars + Node 22, GitHub Actions Variables, Sanity CORS for `/studio`, revalidate webhook, DNS/SSL for `marinacuesta.com`, and a ship checklist. **Two install-time fixes:** (1) Vercel install failed `npm ERR! E401` because `package-lock.json` pinned tarball URLs to a private Azure npm registry (`pkgs.dev.azure.com/BLDR/...`) — regenerated the lockfile against `https://registry.npmjs.org/`; (2) GitHub Actions then failed on the Linux runner resolving `lightningcss-linux-x64-gnu` from the cleaned lockfile — added the missing optional native package entry. Env vars confirmed by grep: `NEXT_PUBLIC_SANITY_PROJECT_ID`/`_DATASET`/`_API_VERSION`, `NEXT_PUBLIC_SITE_URL`, `SANITY_REVALIDATE_SECRET`; `SANITY_API_WRITE_TOKEN` is seed-only (never in prod); no runtime read token (client uses `useCdn: true` on the public dataset). Verified: `typecheck` + `lint` + `build` all pass locally; PR #1 merged. **Owner/dashboard-driven remainder (not code — see `DEPLOY.md`):** Vercel import + env vars + Node 22, the `NEXT_PUBLIC_SANITY_PROJECT_ID` Actions Variable, the production `/studio` Sanity CORS origin, pointing the revalidate webhook at the live URL + a test publish, and DNS/SSL for `marinacuesta.com`. First Phase 6 (post-launch) feature.

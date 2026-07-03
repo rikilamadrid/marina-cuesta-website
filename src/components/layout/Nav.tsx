@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import ThemeToggle from "./ThemeToggle";
+
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/#work" },
@@ -89,6 +91,8 @@ export default function Nav() {
           </Link>
         ))}
       </nav>
+
+      <ThemeToggle />
 
       <StudioButton onDark={onDark} />
 

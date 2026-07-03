@@ -1,55 +1,58 @@
 # Current Feature
 
-Feature 31 - Vercel Deploy & CI/CD
+Feature 32 — Dark / Light Mode Toggle
 
 ## Status
 
-In Progress — code deliverables done; remaining steps are owner/dashboard-driven. First of three post-launch features (31 deploy/CI-CD → 32 dark mode → 33 EN/ES toggle). Working them one at a time.
+In Progress — building. Second of three post-launch features (31 deploy/CI-CD → **32 dark mode** → 33 EN/ES toggle). Feature 31's code is merged to `main`; its remaining steps are owner/dashboard-driven only (see `DEPLOY.md`) — its CHANGELOG entry is in place.
 
-**Code done (this branch, `feature/vercel-deploy-and-cicd`):**
+## Decisions (locked)
 
-- `.github/workflows/ci.yml` — CI gate on PR→`main` and push→`main`: `npm ci` → `typecheck` → `lint` → `build`. Verification only; does not deploy. Node from `.nvmrc` (22); build env pulls public Sanity config from repo Variables with sensible fallbacks.
-- Added `typecheck` script (`tsc --noEmit`) to `package.json`. Verified `typecheck` + `lint` + `build` all pass locally.
-- `DEPLOY.md` — owner runbook: Vercel project + env vars, GitHub Actions Variables, Sanity CORS for `/studio`, revalidate webhook, DNS for `marinacuesta.com`, ship checklist.
-
-**Owner/dashboard-driven (cannot be done from code — see `DEPLOY.md`):** Vercel import + env vars + Node 22, GitHub Actions Variable `NEXT_PUBLIC_SANITY_PROJECT_ID`, Sanity CORS origin, point webhook at live URL + test publish, DNS + SSL for `marinacuesta.com`.
-
-**Open questions resolved:**
-
-- Env-var names (grepped): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`, `NEXT_PUBLIC_SITE_URL`, `SANITY_REVALIDATE_SECRET`. `SANITY_API_WRITE_TOKEN` is seed-only (never in prod). **No runtime read token** — client uses `useCdn: true` on the public dataset, so the spec's "API read token" doesn't apply.
-- DNS: `SEO-CHECKLIST.md` doesn't cover DNS; `DEPLOY.md` documents the registrar records, treating DNS as owner-driven.
+- **Dark look:** _warm dimmed monograph_ — stay in the brand's warm world (warm near-black paper, warm bone/off-white text, garnet/oxblood accents preserved). Not a cold gray/blue inversion.
+- **First-visit default:** _follow OS_ (`prefers-color-scheme`), default light if unknown.
+- **Studio (`/studio`):** left on Sanity's own theme — not wired to the site toggle.
 
 ## Goals
 
-- Deploy to **Vercel** wired to the GitHub repo, serving production from `main`.
-- Configure production **env vars** on Vercel (Sanity project ID/dataset, read token, revalidate secret, site URL).
-- Confirm the **revalidate webhook** (`/api/revalidate`) works against the live deployment.
-- Add a **GitHub Actions** workflow gating PRs and `main` on typecheck + `next build`.
-- Vercel owns deploy (preview per PR, prod on merge); Actions owns verification — no duplication.
-- Point **marinacuesta.com** at Vercel (DNS + SSL), or document owner-driven DNS steps.
+- Add an accessible **theme toggle** in the nav (real `<button>`, state in `aria-label`, keyboard-operable, visible focus). Editorial contrast glyph — not a generic sun/moon in a rounded box.
+- Add a **dark palette** by remapping the existing semantic tokens under `:root[data-theme="dark"]` in `globals.css`. Components keep using semantic names.
+- **Persist** to `localStorage`; **respect OS** on first visit; set `color-scheme` for form controls/scrollbars.
+- **No flash of wrong theme** — inline a pre-hydration script in `layout.tsx` before first paint.
+- Reconcile with the fixed dark oxblood sections + nav color inversion (`[data-nav-dark]`/`[data-on-dark]`, Feature 27) — inversion must still read in both themes.
+- Respect `prefers-reduced-motion` for the theme transition.
 
-## Notes
+## Implementation notes
 
-- Full spec: `@context/features/31-vercel-deploy-and-cicd.md`.
-- Next 16 / React 19 / Node ≥22. Pin Node in Vercel + Actions.
-- Vercel deploy install failed with `npm ERR! E401` because `package-lock.json` had tarball URLs pinned to a private Azure npm registry (`pkgs.dev.azure.com/BLDR/...`). Regenerate the lockfile against `https://registry.npmjs.org/` and confirm those URLs are gone.
-- GitHub Actions failed on `main` after merge because the Linux runner could not resolve `lightningcss-linux-x64-gnu` from the cleaned lockfile. Add the missing optional native package entry and keep CI's public Sanity project ID fallback set to `dnzlfg96`.
-- Add the production `/studio` URL to Sanity CORS/dev-host whitelist (memory `sanity-studio-access`); confirm login on live `/studio`.
-- Watch for cloud-sync `' 2'` duplicate files (memory `cloud-sync-duplicate-files`) — keep them out of commits/deploys.
-- Reconcile domain steps with `@context/SEO-CHECKLIST.md`.
+- **Token remap, not per-component edits** — the whole point. Overrides live in one `:root[data-theme="dark"]` block.
+- **`bone` is overloaded** and stays *light* in dark mode: it is light-text-on-oxblood in Nav/Manifesto/ContactCTA/ProjectDetail (the majority). The conflicting minority uses are fixed at the call site instead:
+  - `bg-ink text-bone` inverted pills → `text-bone`→`text-paper` (WorkControls active chip, skip link). `bg-ink` inverts to a light pill in dark; `text-paper` inverts to dark text — a visual no-op in light mode (paper ≈ bone).
+  - `bg-bone` *surfaces* (ProjectCard base, AboutSection band) → new `--color-surface-alt` token (light value = bone; dark value = warm raised near-black). No-op in light, darkens in dark.
+- `blush` / `oxblood` / `tile-*` are **not** overridden — they read correctly in both themes (blush/oxblood are already light-text-on-dark or warm accents; tiles are already dark).
+- Theme cross-fade via a zero-specificity `:where(body *)` transition on bg/border/color so component transitions still win; reduced-motion CSS safety net already zeroes it.
+- `ThemeToggle` reads `<html data-theme>` via **`useSyncExternalStore`** (not `useEffect`+`setState`, which trips the `react-hooks/set-state-in-effect` rule the CI gate enforces); the toggle mutates the attribute + `localStorage` and dispatches a `themechange` event to re-render.
 
-## Predecessor note
+## Verified
 
-Feature 30 (Responsive QA & Handoff) is **merged to `main`** (`PressList.tsx` date fix + `HANDOFF.md`); its branch is deleted and its CHANGELOG entry is in place. This branch (`feature/vercel-deploy-and-cicd`) is cut fresh from `main`.
+- `typecheck` + `lint` + `build` all clean; 31 routes prerender unchanged. No-flash script + dark token block confirmed in the built HTML/CSS. **Not yet done:** live-browser click-through (sandbox blocked the local server) — eyeball the toggle with `npm run start` before merge.
 
-## Upcoming (specs written, not started)
+## Files
 
-- **Feature 32 — Dark/Light Mode Toggle:** `@context/features/32-dark-light-mode-toggle.md`. Open decision: full palette inversion vs. dimmed warm variant.
-- **Feature 33 — Language Toggle (EN/ES):** `@context/features/33-language-toggle-en-es.md`. Blocking decision: UI-only vs. full CMS content localization + Sanity field-level vs. document-level i18n.
+- `src/app/globals.css` — `--color-surface-alt` token; `:root[data-theme="dark"]` override block; `color-scheme`; theme-transition.
+- `src/app/layout.tsx` — pre-hydration no-flash script in `<head>`; `suppressHydrationWarning` on `<html>`.
+- `src/components/layout/ThemeToggle.tsx` — new client toggle.
+- `src/components/layout/Nav.tsx` — mount `<ThemeToggle />` (uses `text-current` → inverts with the nav).
+- `src/components/work/WorkControls.tsx`, `src/app/(site)/layout.tsx` — `text-bone`→`text-paper` on `bg-ink` pills.
+- `src/components/work/ProjectCard.tsx`, `src/components/home/AboutSection.tsx` — `bg-bone`→`bg-surface-alt`.
 
 ## Out of Scope
 
-- Dark mode (`32`) and language toggle (`33`) — separate features, later.
+- Vercel/CI (`31`, done) and language toggle (`33`, next).
+- Any layout redesign — palette/theming only.
+- Theming the Sanity Studio.
+
+## Upcoming (spec written, not started)
+
+- **Feature 33 — Language Toggle (EN/ES):** `@context/features/33-language-toggle-en-es.md`. Blocking decision: UI-only vs. full CMS content localization + Sanity field-level vs. document-level i18n.
 
 ## History
 

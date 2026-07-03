@@ -34,7 +34,7 @@ export default function ProjectCard({ project, index = 0 }: Props) {
   return (
     <Link
       href={`/work/${slug}`}
-      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[3px] border border-line bg-bone p-6 no-underline transition-[transform,box-shadow] duration-500 ease-[var(--ease)] hover:-translate-y-1 hover:shadow-[var(--shadow)] motion-reduce:transition-none"
+      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[3px] border border-line bg-surface-alt p-6 no-underline transition-[transform,box-shadow] duration-500 ease-[var(--ease)] hover:-translate-y-1 hover:shadow-[var(--shadow)] motion-reduce:transition-none"
     >
       {hasCover ? (
         <>

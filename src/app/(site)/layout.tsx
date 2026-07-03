@@ -13,7 +13,7 @@ export default function SiteLayout({
           keyboard users can bypass the Spine/Nav and jump to page content. */}
       <a
         href="#main-content"
-        className="sr-only rounded-full focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-ink focus:px-4 focus:py-2 focus:text-[13px] focus:font-medium focus:text-bone"
+        className="sr-only rounded-full focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[60] focus:bg-ink focus:px-4 focus:py-2 focus:text-[13px] focus:font-medium focus:text-paper"
       >
         Skip to content
       </a>

@@ -52,7 +52,7 @@ export default function WorkControls({ projects }: Props) {
                 aria-pressed={active}
                 className={`rounded-full border px-4 py-2 text-xs font-medium tracking-[0.02em] transition-[color,background-color,border-color] duration-200 ease-[var(--ease)] ${
                   active
-                    ? "border-ink bg-ink text-bone"
+                    ? "border-ink bg-ink text-paper"
                     : "border-line bg-transparent text-ink-2 hover:border-ink"
                 }`}
               >

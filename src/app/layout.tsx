@@ -83,8 +83,18 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${fraunces.variable} ${hankenGrotesk.variable} h-full antialiased`}
     >
+      <head>
+        {/* No-flash theme: set data-theme before first paint (Feature 32).
+            Stored choice wins; otherwise follow OS; default light if unknown. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('theme');if(t!=='dark'&&t!=='light'){t=window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();`,
+          }}
+        />
+      </head>
       <body className="min-h-full flex flex-col">
         {settings && <JsonLd data={personJsonLd(settings)} />}
         {children}

@@ -12,7 +12,7 @@ The code reads exactly these (see `.env.example`, `src/sanity/env.ts`, `src/lib/
 
 | Variable | Where set | Required? | Notes |
 | --- | --- | --- | --- |
-| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Vercel + GitHub Actions | **Yes** | No default — `next build` fetches Sanity for SSG and throws without it. Public value. |
+| `NEXT_PUBLIC_SANITY_PROJECT_ID` | Vercel + GitHub Actions | **Yes** | Use `dnzlfg96`. Public value; CI falls back to this production project ID if the repo Variable is unset. |
 | `NEXT_PUBLIC_SANITY_DATASET` | Vercel + GitHub Actions | **Yes** | Use `production`. `src/sanity/env.ts` asserts it. |
 | `NEXT_PUBLIC_SANITY_API_VERSION` | Vercel (optional) | No | Defaults to `2025-01-01` in code and in the CI workflow. |
 | `NEXT_PUBLIC_SITE_URL` | Vercel | Recommended | `https://marinacuesta.com`, no trailing slash. Falls back to that value if unset. |
@@ -34,8 +34,8 @@ There is **no runtime read token**: the Sanity client uses `useCdn: true` agains
 
 Runs on every PR to `main` and every push to `main`: `npm ci` → `typecheck` → `lint` → `build`. A red run blocks the merge.
 
-- The build step needs the public Sanity config. Add it as repo **Variables** (not Secrets), at **Settings → Secrets and variables → Actions → Variables**:
-  - `NEXT_PUBLIC_SANITY_PROJECT_ID` — **required**, or the CI build throws.
+- The build step needs the public Sanity config. You can add it as repo **Variables** (not Secrets), at **Settings → Secrets and variables → Actions → Variables**:
+  - `NEXT_PUBLIC_SANITY_PROJECT_ID` — optional override; the workflow falls back to `dnzlfg96`.
   - `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`, `NEXT_PUBLIC_SITE_URL` — optional; the workflow falls back to `production` / `2025-01-01` / `https://marinacuesta.com`.
 - Optional: **Settings → Branches → Branch protection** on `main` → require the "Typecheck, lint & build" check to pass before merge.
 
@@ -76,7 +76,7 @@ Once the domain resolves and SSL is live, continue with the post-launch SEO step
 
 - [ ] Vercel project imported, Node 22.x, production branch `main`
 - [ ] Production env vars set on Vercel (incl. `SANITY_REVALIDATE_SECRET`)
-- [ ] GitHub Actions Variable `NEXT_PUBLIC_SANITY_PROJECT_ID` set; CI green on a PR
+- [ ] GitHub Actions CI green on `main`
 - [ ] (Optional) Branch protection requires the CI check
 - [ ] Sanity CORS origin added; live `/studio` login works
 - [ ] Revalidate webhook points at the live URL; a test publish goes live in seconds

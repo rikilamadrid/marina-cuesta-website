@@ -33,6 +33,7 @@ In Progress — code deliverables done; remaining steps are owner/dashboard-driv
 - Full spec: `@context/features/31-vercel-deploy-and-cicd.md`.
 - Next 16 / React 19 / Node ≥22. Pin Node in Vercel + Actions.
 - Vercel deploy install failed with `npm ERR! E401` because `package-lock.json` had tarball URLs pinned to a private Azure npm registry (`pkgs.dev.azure.com/BLDR/...`). Regenerate the lockfile against `https://registry.npmjs.org/` and confirm those URLs are gone.
+- GitHub Actions failed on `main` after merge because the Linux runner could not resolve `lightningcss-linux-x64-gnu` from the cleaned lockfile. Add the missing optional native package entry and keep CI's public Sanity project ID fallback set to `dnzlfg96`.
 - Add the production `/studio` URL to Sanity CORS/dev-host whitelist (memory `sanity-studio-access`); confirm login on live `/studio`.
 - Watch for cloud-sync `' 2'` duplicate files (memory `cloud-sync-duplicate-files`) — keep them out of commits/deploys.
 - Reconcile domain steps with `@context/SEO-CHECKLIST.md`.

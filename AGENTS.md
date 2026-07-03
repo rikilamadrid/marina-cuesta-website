@@ -1,4 +1,4 @@
-# CLAUDE.md — Working Conventions for This Project
+# AGENTS.md — Working Conventions for This Project
 
 > Read this before every session. It keeps decisions consistent as work continues across multiple Claude Code sessions. Full spec lives in `context/project-overview.md` — this file is the short, load-bearing summary plus rules that are easy to drift on.
 

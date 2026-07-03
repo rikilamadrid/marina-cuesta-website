@@ -2,7 +2,7 @@
 
 ## Status
 
-Not Started
+Complete
 
 ## Goals
 
@@ -17,8 +17,9 @@ Not Started
 
 ## Notes
 
-- **Depends on:** nothing code-wise; best written after `22`/`23` so on-page items are accurate. Last Phase 5 feature.
-- Source: `@context/project-overview.md` → SEO On-page/Off-page checklist. This directly serves the two client outcomes: rank #1 for "Marina Cuesta" and the correct face in the Google/AI card.
+- **Depends on:** nothing code-wise; written after `22`-`25` so the on-page SEO steps are accurate. Last Phase 5 feature.
+- Source: `@context/project-overview.md` -> SEO On-page/Off-page checklist. This directly serves the two client outcomes: rank #1 for "Marina Cuesta" and the correct face in the Google/AI card.
+- Delivered as root `SEO-CHECKLIST.md` with plain-language owner steps and official reference links.
 
 ## Out of Scope
 

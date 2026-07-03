@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-import { urlFor } from "@/sanity/lib/image";
+import { optimizedImageUrl } from "@/sanity/lib/image";
 import type { GalleryItem, SanityImage, VideoEmbed } from "@/types/sanity";
 
 type Props = {
@@ -103,16 +103,26 @@ function MediaFrame({
   }
 
   if (!isGalleryImage(item)) return null;
+  const isWide = spanClass.includes("col-span-2");
 
   return (
     <figure className={spanClass}>
       <div className="relative aspect-[16/10] overflow-hidden rounded-[var(--radius)] bg-blush">
         <Image
-          src={urlFor(item).width(1400).height(875).fit("crop").url()}
+          src={optimizedImageUrl({
+            source: item,
+            width: isWide ? 1400 : 700,
+            height: isWide ? 875 : 438,
+          })}
           alt={`${client} ${projectTitle} gallery image ${index + 1}`}
           fill
-          sizes="(min-width: 981px) 1100px, 100vw"
+          sizes={
+            isWide
+              ? "(max-width: 980px) calc(100vw - 40px), 1100px"
+              : "(max-width: 859px) calc(100vw - 40px), (max-width: 980px) calc(50vw - 30px), 540px"
+          }
           className="object-cover"
+          quality={82}
         />
       </div>
     </figure>

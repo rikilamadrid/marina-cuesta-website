@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 
-import { urlFor } from "@/sanity/lib/image";
+import { optimizedImageUrl } from "@/sanity/lib/image";
 import type { Project, SiteSettings } from "@/types/sanity";
 
 // Absolute base URL for canonical links, OG tags, and JSON-LD `image`/`url`.
@@ -83,7 +83,12 @@ export function buildMetadata({
 // Site Settings; every optional field is omitted when its data is absent.
 export function personJsonLd(settings: SiteSettings) {
   const image = settings.headshot?.asset
-    ? urlFor(settings.headshot).width(1200).height(1200).fit("crop").url()
+    ? optimizedImageUrl({
+        source: settings.headshot,
+        width: 1200,
+        height: 1200,
+        quality: 88,
+      })
     : undefined;
 
   // careerArc is ordered oldest→newest, so the last entry is her current org.
@@ -113,7 +118,12 @@ export function creativeWorkJsonLd(
   settings?: SiteSettings | null,
 ) {
   const image = project.cover?.asset
-    ? urlFor(project.cover).width(1200).height(1500).fit("crop").url()
+    ? optimizedImageUrl({
+        source: project.cover,
+        width: 1200,
+        height: 1500,
+        quality: 88,
+      })
     : undefined;
 
   return {

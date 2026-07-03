@@ -5,15 +5,15 @@ import Reveal from "@/components/ui/Reveal";
 const CREDO = [
   {
     k: "Ideas first",
-    v: "Concept over format, always. The format is just where the idea goes to live.",
+    v: "Concept before format. The medium should serve the idea.",
   },
   {
     k: "Empathy as strategy",
     v: "Leading across countries and cultures by listening before directing.",
   },
   {
-    k: "Culture, not clichés",
-    v: "Multicultural work that's true, not translated. Hispanic by depth, not by accent.",
+    k: "Culture with care",
+    v: "Multicultural work built from real insight, not surface cues.",
   },
   {
     k: "Women, leading",
@@ -44,9 +44,8 @@ export default function Manifesto() {
           </div>
 
           <blockquote className="mt-9 max-w-[16ch] font-display text-[clamp(1.7rem,4.6vw,3.4rem)] font-normal leading-[1.18] tracking-[-0.01em]">
-            I don&apos;t make ads. I build platforms where culture, craft and{" "}
-            <em className="italic text-garnet">conviction</em> meet — and where
-            the next woman can see herself at the head of the table.
+            I care about ideas that move people, respect culture and leave the
+            room better for the next woman who walks in.
           </blockquote>
         </Reveal>
 

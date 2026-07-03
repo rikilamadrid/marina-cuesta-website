@@ -10,7 +10,7 @@ import { ogProfileImageUrl, personJsonLd, SITE_URL } from "@/lib/seo";
 const fraunces = Fraunces({
   variable: "--font-fraunces",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600"],
+  weight: ["400", "500"],
   style: ["normal", "italic"],
   display: "swap",
   preload: true,
@@ -19,7 +19,7 @@ const fraunces = Fraunces({
 const hankenGrotesk = Hanken_Grotesk({
   variable: "--font-hanken",
   subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
+  weight: ["300", "400", "500", "600"],
   display: "swap",
   preload: true,
 });

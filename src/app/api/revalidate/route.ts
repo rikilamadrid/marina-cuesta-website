@@ -24,7 +24,7 @@ type RevalidateTarget = {
 const TARGETS_BY_TYPE = {
   siteSettings: [{ path: "/", type: "layout" }],
   project: [{ path: "/" }, { path: "/work" }, { path: "/sitemap.xml" }],
-  pressMention: [{ path: "/press" }],
+  pressMention: [{ path: "/" }, { path: "/press" }],
 } as const;
 
 function targetsForPayload(payload: RevalidatePayload): RevalidateTarget[] {

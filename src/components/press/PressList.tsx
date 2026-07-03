@@ -9,7 +9,7 @@ export default function PressList({ press }: { press: PressMention[] }) {
   if (press.length === 0) {
     return (
       <p className="border-t border-line py-[22px] text-[15px] leading-[1.6] text-ink-2">
-        Press &amp; mentions are on the way. Check back soon.
+        Press and mentions will appear here soon.
       </p>
     );
   }

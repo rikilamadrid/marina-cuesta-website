@@ -18,7 +18,7 @@ export default function ContactCTA({ settings }: Props) {
     >
       <Reveal className="mx-auto w-full max-w-[1240px] px-5">
         <h2 className="font-display text-[clamp(2.4rem,7vw,5rem)] font-normal leading-[1.02] tracking-[-0.02em]">
-          Let&apos;s make something
+          Let&apos;s build something
           <br />
           that <em className="italic text-garnet">matters</em>.
         </h2>

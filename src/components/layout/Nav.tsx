@@ -6,9 +6,9 @@ import { useEffect, useRef, useState } from "react";
 const NAV_LINKS = [
   { label: "Home", href: "/" },
   { label: "Work", href: "/#work" },
-  { label: "About", href: "/about" },
+  { label: "About", href: "/#about" },
   { label: "Recognition", href: "/#recognition" },
-  { label: "Press", href: "/press" },
+  { label: "Press", href: "/#press" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -153,6 +153,7 @@ function StudioButton({ onDark }: { onDark: boolean }) {
   return (
     <Link
       href="/studio"
+      prefetch={false}
       className={`inline-flex items-center gap-[7px] rounded-full border px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-current transition-all duration-[250ms] ease-[var(--ease)] hover:border-garnet hover:bg-garnet hover:text-bone ${
         onDark ? "border-bone/40" : "border-ink"
       }`}

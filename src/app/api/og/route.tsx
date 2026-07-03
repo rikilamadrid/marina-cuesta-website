@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 import { sanityFetch, SANITY_TAGS } from "@/sanity/lib/fetch";
 import { siteSettingsQuery } from "@/sanity/lib/queries";
-import { urlFor } from "@/sanity/lib/image";
+import { optimizedImageUrl } from "@/sanity/lib/image";
 
 // Dynamic OG card generator (feature 23). Two modes:
 //   /api/og                                        → profile card (name + title + headshot)
@@ -107,7 +107,12 @@ async function profileCard() {
   const name = settings?.name ?? SITE_NAME;
   const role = settings?.jobTitle ?? SITE_ROLE;
   const photo = settings?.headshot?.asset
-    ? urlFor(settings.headshot).width(560).height(700).fit("crop").url()
+    ? optimizedImageUrl({
+        source: settings.headshot,
+        width: 560,
+        height: 700,
+        quality: 88,
+      })
     : null;
 
   const words = name.trim().split(/\s+/);

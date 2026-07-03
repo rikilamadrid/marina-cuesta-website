@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-import { urlFor } from "@/sanity/lib/image";
+import { optimizedImageUrl } from "@/sanity/lib/image";
 import type { ProjectCard as ProjectCardData } from "@/types/sanity";
 
 // The 6 curated tile gradients from the prototype `palettes` array, expressed
@@ -39,11 +39,16 @@ export default function ProjectCard({ project, index = 0 }: Props) {
       {hasCover ? (
         <>
           <Image
-            src={urlFor(cover!).width(640).height(800).fit("crop").url()}
+            src={optimizedImageUrl({
+              source: cover!,
+              width: 640,
+              height: 800,
+            })}
             alt={`${title} — ${client}`}
             fill
-            sizes="(max-width: 600px) 100vw, (max-width: 980px) 50vw, 33vw"
+            sizes="(max-width: 600px) calc(100vw - 40px), (max-width: 980px) calc(50vw - 30px), 380px"
             className="scale-[1.01] object-cover transition-transform duration-700 ease-[var(--ease)] [filter:grayscale(0.12)_contrast(1.02)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-[1.01]"
+            quality={82}
           />
           {/* Bottom-up scrim keeps the client/title legible over any photo. */}
           <div

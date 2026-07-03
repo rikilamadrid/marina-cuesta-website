@@ -1,7 +1,7 @@
 import Image from "next/image";
 
 import HeroText from "@/components/home/HeroText";
-import { urlFor } from "@/sanity/lib/image";
+import { optimizedImageUrl } from "@/sanity/lib/image";
 import type { SiteSettings } from "@/types/sanity";
 
 // "Marina Cuesta" → ["Marina", "Cuesta"]. First name roman, last italic garnet
@@ -40,12 +40,18 @@ export default function Hero({ settings }: { settings: SiteSettings }) {
           <figure className="relative m-0 aspect-[4/5] w-full max-w-[320px] justify-self-end overflow-hidden rounded-[3px] bg-[linear-gradient(150deg,var(--color-blush),#d9bdb5)] shadow-[var(--shadow)] after:pointer-events-none after:absolute after:inset-0 after:rounded-[3px] after:border after:border-ink/10 after:content-[''] max-[860px]:order-1 max-[860px]:max-w-[172px] max-[860px]:justify-self-start">
             {headshot?.asset ? (
               <Image
-                src={urlFor(headshot).width(640).height(800).fit("crop").url()}
+                src={optimizedImageUrl({
+                  source: headshot,
+                  width: 640,
+                  height: 800,
+                  quality: 86,
+                })}
                 alt={alt}
                 fill
                 sizes="(max-width: 860px) 172px, 320px"
                 className="object-cover [filter:grayscale(0.12)_contrast(1.02)]"
                 priority
+                fetchPriority="high"
               />
             ) : (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-[22px] text-center text-garnet-deep">

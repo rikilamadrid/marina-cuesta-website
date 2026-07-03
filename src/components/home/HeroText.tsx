@@ -8,7 +8,7 @@ import { motion, useReducedMotion } from "framer-motion";
 const STATS = [
   { n: "20+", l: "Years" },
   { n: "50+", l: "Awards" },
-  { n: "3", l: "Markets · US · Hispanic · EU" },
+  { n: "3", l: "Markets: US, Hispanic, EU" },
   { n: "Cannes", l: "See It Be It · 2016" },
 ] as const;
 

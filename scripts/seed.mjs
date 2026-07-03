@@ -86,16 +86,16 @@ const siteSettings = {
   jobTitle: "Executive Creative Director",
   // headshot intentionally omitted — client to provide (see note above).
   shortBio:
-    "Twenty years of good ideas across three markets, told in two languages — for the world's biggest brands and for the women who deserve to see themselves leading.",
+    "Executive Creative Director with twenty years across the U.S., Hispanic and European markets, building thoughtful work for global brands and opening doors for the women coming next.",
   longBio: [
     para(
-      "Driven by a vocation for powerful ideas, recognized as one of the most influential female voices in advertising. For more than twenty years I've led integrated platforms and campaigns across North American, U.S. Hispanic and European markets — for clients including Apple, McDonald's, GOYA Foods, Chevrolet, FritoLay and Sony. My path runs through TBWA, CHINA, Dieste and The Marketing Arm, and most recently launching Creyentes / We Believers in the United States. I lead with empathy, inspiration and purpose, collaborating across countries and cultures, and I'm a committed advocate for mentorship, diversity, inclusion, and the women reshaping this industry. A lover of cultures and new adventures, I find joy in travel — often alongside my greatest creative project: my family.",
+      "Marina Cuesta is an Executive Creative Director with more than twenty years of experience across North American, U.S. Hispanic and European markets. She has led integrated campaigns for Apple, McDonald's, GOYA Foods, Chevrolet, FritoLay and Sony, with a career shaped by TBWA, CHINA, Dieste, The Marketing Arm and Creyentes / We Believers in the United States. Her work is grounded in empathy, cultural fluency and clear creative standards. She is also a committed mentor and advocate for the women reshaping the industry. Outside the work, she finds energy in travel, new cultures and her family.",
     ),
   ],
   careerArc: [
-    { _key: key(), org: "TBWA · Madrid", note: "Copywriter → McDonald's, Apple at Media Arts Lab" },
-    { _key: key(), org: "CHINA · Spain", note: "Creative Director → Levi's, Schweppes, KFC, Sitges" },
-    { _key: key(), org: "Dieste · USA", note: "Creative Director → GOYA, P&G, Dunkin', The Wild Detectives" },
+    { _key: key(), org: "TBWA · Madrid", note: "Copywriter for McDonald's and Apple at Media Arts Lab" },
+    { _key: key(), org: "CHINA · Spain", note: "Creative Director for Levi's, Schweppes, KFC and Sitges" },
+    { _key: key(), org: "Dieste · USA", note: "Creative Director for GOYA, P&G, Dunkin' and The Wild Detectives" },
     { _key: key(), org: "The Marketing Arm", note: "Group Creative Director" },
     { _key: key(), org: "Creyentes / We Believers", note: "Executive Creative Director" },
   ],
@@ -109,7 +109,7 @@ const siteSettings = {
   seo: {
     title: "Marina Cuesta — Executive Creative Director",
     description:
-      "Executive Creative Director with twenty years across North American, U.S. Hispanic and European markets — for the world's biggest brands and the women reshaping the industry.",
+      "Executive Creative Director with twenty years across North American, U.S. Hispanic and European markets, creating thoughtful work for global brands.",
   },
 };
 
@@ -117,18 +117,18 @@ const siteSettings = {
 
 const projectData = [
   // Feminist & Social
-  { client: "P&G", title: "The Pattern Bra", category: "Feminist & Social", featured: true, summary: "Rethinking the everyday bra around real bodies — inclusive design as a statement." },
+  { client: "P&G", title: "The Pattern Bra", category: "Feminist & Social", featured: true, summary: "Rethinking the everyday bra around real bodies and inclusive design." },
   { client: "NTARUPT", title: "The Pull Out Game", category: "Feminist & Social", featured: true, summary: "A frank, funny campaign confronting teen pregnancy in Dallas head-on." },
   { client: "NTARUPT", title: "Talk About It Dallas", category: "Feminist & Social", summary: "Getting a city to talk openly about sex, health, and young people." },
-  { client: "The Wild Detectives", title: "Shequel", category: "Feminist & Social", featured: true, summary: "The sequel women were owed — reclaiming the stories that left them out." },
+  { client: "The Wild Detectives", title: "Shequel", category: "Feminist & Social", featured: true, summary: "Reclaiming the stories that left women out." },
   // Multicultural
   { client: "GOYA", title: "Prodigal Son", category: "Multicultural", featured: true, summary: "A modern parable for GOYA, told with heart and heritage." },
   { client: "GOYA", title: "Real-Life Chefs", category: "Multicultural", summary: "Everyday cooks become the face of a kitchen staple." },
-  { client: "GOYA", title: "Oda a la Mezcla", category: "Multicultural", summary: "Una oda a la mezcla — celebrating the blend of cultures on every plate." },
+  { client: "GOYA", title: "Oda a la Mezcla", category: "Multicultural", summary: "Una oda a la mezcla, celebrating the blend of cultures on every plate." },
   { client: "Dunkin'", title: "Hispanic Heritage Month", category: "Multicultural", summary: "Dunkin' toasts Hispanic heritage, one cup at a time." },
   { client: "Inter Miami CF", title: "Inter Miami CF", category: "Multicultural", summary: "Building a bilingual voice for a club with a global fanbase." },
   // Global Brands
-  { client: "Apple", title: "Apple", category: "Global Brands", featured: true, summary: "Work for Apple at Media Arts Lab — craft measured in millimeters." },
+  { client: "Apple", title: "Apple", category: "Global Brands", featured: true, summary: "Work for Apple at Media Arts Lab, where craft is measured in millimeters." },
   { client: "McDonald's", title: "McDonald's", category: "Global Brands", summary: "Global-scale ideas for the world's most recognizable brand." },
   { client: "FritoLay", title: "SmartFood", category: "Global Brands", summary: "Giving a snack brand a smarter, sharper personality." },
   { client: "Schweppes", title: "First Time", category: "Global Brands", featured: true, summary: "Schweppes and the electric feeling of a first time." },
@@ -136,8 +136,8 @@ const projectData = [
   { client: "Lululemon", title: "FEEL", category: "Global Brands", featured: true, summary: "Lululemon and the language of how movement actually feels." },
   { client: "Chevrolet", title: "Chevrolet", category: "Global Brands", summary: "Driving a storied auto brand into new cultural territory." },
   // Culture & Film
-  { client: "The Wild Detectives", title: "Litbaits", category: "Culture & Film", summary: "Literature disguised as clickbait — a bookshop's mischief." },
-  { client: "The Wild Detectives", title: "Drunken Literature", category: "Culture & Film", summary: "The classics, read aloud, one drink in — a bookshop ritual." },
+  { client: "The Wild Detectives", title: "Litbaits", category: "Culture & Film", summary: "Literature disguised as clickbait for a bookshop with a point of view." },
+  { client: "The Wild Detectives", title: "Drunken Literature", category: "Culture & Film", summary: "The classics read aloud, one drink in, as a bookshop ritual." },
   { client: "Sitges International Film Festival", title: "Sitges", category: "Culture & Film", featured: true, summary: "Identity and campaign for Europe's premier fantastic film festival." },
   { client: "FIU", title: "Miss Hivaria", category: "Culture & Film", summary: "A bold university campaign that refuses to look away." },
 ];
@@ -177,7 +177,7 @@ const pressData = [
   },
   {
     title: "Add your interviews, features, and talks here",
-    outlet: "Placeholder — replace in the Studio",
+    outlet: "Placeholder. Replace in the Studio",
     type: "feature",
     link: "https://www.linkedin.com/in/marina-cuesta-tovar-a20b0a24/",
   },

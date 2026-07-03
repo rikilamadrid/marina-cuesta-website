@@ -74,7 +74,28 @@ Same workflow for every feature/fix:
 7. **Merge** — merge to main once approved.
 8. **Delete branch** — ask before deleting.
 9. **Review** — periodically review AI-generated code for security (auth/input validation), performance, logic edge cases, and consistency with existing patterns.
-10. **Close out** — mark the feature complete in `context/current-feature.md` and prepend its entry to `CHANGELOG.md` (repo root).
+10. **Close out** — mark the feature complete in `context/current-feature.md`, prepend its entry to the **Detailed build log** in `CHANGELOG.md`, and add a line under `[Unreleased]` in the Keep a Changelog section (see *Versioning & releases* below).
+
+## Versioning & releases
+
+This project follows [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`) and a [Keep a Changelog](https://keepachangelog.com/) top section in `CHANGELOG.md`. Current version lives in `package.json` (`1.0.0` = first public release, 2026-07-03).
+
+**Which number to bump:**
+
+- **PATCH** (`1.0.0 → 1.0.1`) — backward-compatible bug fix (a `fix:` commit).
+- **MINOR** (`1.0.0 → 1.1.0`) — backward-compatible new feature (a `feat:` commit).
+- **MAJOR** (`1.0.0 → 2.0.0`) — a breaking change (removed/renamed public route or Sanity field the CMS depends on, incompatible data-model change). Rare on this project.
+
+**Per feature/fix (at close-out):** add a bullet under `## [Unreleased]` in the correct group — **Added / Changed / Fixed / Removed / Deprecated / Security**. Write it human-readable; don't paste git logs. Keep the per-feature detail in the Detailed build log below it.
+
+**At release (when you cut a version):**
+
+1. Decide the bump from the accumulated `[Unreleased]` entries (highest-impact change wins: any feature → MINOR, only fixes → PATCH).
+2. Rename `## [Unreleased]` to `## [x.y.z] — YYYY-MM-DD`, add a fresh empty `## [Unreleased]` above it.
+3. Run the matching script — `npm run version:patch` | `version:minor` | `version:major` — which bumps `package.json`, commits, and git-tags `vx.y.z`.
+4. Push with tags: `git push --follow-tags`.
+
+Newest version stays at the top; never rewrite a released section.
 
 ## Communication & code-change discipline
 
@@ -105,7 +126,7 @@ Same workflow for every feature/fix:
 | File | Purpose |
 | --- | --- |
 | `context/current-feature.md` | The active task — status, goals, notes (active task only) |
-| `CHANGELOG.md` | Per-feature build log — one entry per merged feature/fix, newest first |
+| `CHANGELOG.md` | Keep a Changelog release notes (`[Unreleased]` + versions) on top; per-feature Detailed build log below, newest first |
 | `context/features/` | Specs for other phases/features, past or upcoming |
 | `context/screenshots/` | Reference screenshots for UI being built |
 | `context/project-overview.md` | Full spec: stack, content models, design system, phases, seed content |

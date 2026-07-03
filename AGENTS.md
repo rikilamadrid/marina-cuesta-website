@@ -85,7 +85,8 @@ Same workflow for every feature/fix:
 - Make minimal changes to accomplish the task — don't refactor unrelated code unless asked.
 - Preserve existing patterns in the codebase.
 - If something isn't working after 2–3 attempts, stop and explain the issue rather than continuing to try fixes.
-- Conventional commit messages (`feat:`, `fix:`, `chore:`); one feature/fix per commit; never include "Generated with Claude" in a commit message.
+- Conventional commit messages (`feat:`, `fix:`, `chore:`); one feature/fix per commit.
+- **No AI attribution in commit messages.** Commits must read as if written by the repository maintainer. Never add co-author trailers, generated-by footers, or any similar attribution — including `Co-authored-by: Claude`, `Generated with Claude Code`, `AI-assisted-by`, or any variant. No exceptions.
 
 ---
 

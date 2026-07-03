@@ -4,7 +4,7 @@ Feature 32 — Dark / Light Mode Toggle
 
 ## Status
 
-In Progress — building. Second of three post-launch features (31 deploy/CI-CD → **32 dark mode** → 33 EN/ES toggle). Feature 31's code is merged to `main`; its remaining steps are owner/dashboard-driven only (see `DEPLOY.md`) — its CHANGELOG entry is in place.
+**Complete — merged to `main`; branch deleted; CHANGELOG entry prepended.** Second of three post-launch features (31 deploy/CI-CD → **32 dark mode ✓** → 33 EN/ES toggle). One follow-up before it's fully signed off: live-browser click-through with `npm run start` (the sandbox blocked the local server during build). Next up is Feature 33 (Language Toggle EN/ES) — spec at `@context/features/33-language-toggle-en-es.md`, still blocked on the UI-only vs. full-CMS-localization decision.
 
 ## Decisions (locked)
 

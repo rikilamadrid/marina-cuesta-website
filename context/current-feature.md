@@ -1,36 +1,36 @@
 # Current Feature
 
-Feature 23 — OG Image Generation (`next/og`)
+Feature 24 — Sitemap & Robots
 
 ## Status
 
-Complete — branch `feature/og-image-generation`; ready for review/merge. (Feature 22 merged to main: `ddf2c38`.)
+Complete — branch `feature/sitemap-and-robots`; ready for review/merge.
 
 ## Goals
 
-- Build `src/app/api/og/route.tsx` with `next/og`'s `ImageResponse` (built into Next 16 — no `@vercel/og` install) to render dynamic OG cards on the editorial brand (paper/oxblood, Fraunces + Hanken).
-- **Profile/default card** (no params): Marina's name + jobTitle + headshot — data-driven from Site Settings, honoring the one-photo rule.
-- **Per-project card** (`?type=project&title=&client=&category=`): project title + client + category eyebrow.
-- Landscape 1200×630 (standard `og:image` / Twitter `summary_large_image`).
-- Wire the generated URLs into `generateMetadata` (feature 22): default OG = profile card; `/work/[slug]` OG = project card.
-- Fonts loaded explicitly inside the route (Google Fonts, text-subset so Spanish accents render) — `ImageResponse` doesn't inherit `next/font`.
-- `npm run build` passes; endpoint returns a valid PNG.
+- Build `src/app/sitemap.ts` generating entries from Sanity content: home, `/work`, every `/work/[slug]`, `/about`, `/press`.
+- Exclude `/studio` and API routes from the sitemap.
+- Build `src/app/robots.ts` allowing crawl of public pages, disallowing `/studio` and `/api/*`, and pointing to the sitemap.
+- Use the absolute base URL from `NEXT_PUBLIC_SITE_URL` via the existing SEO helpers.
+- Verify `/sitemap.xml` and `/robots.txt` output the expected URLs including seeded project slugs.
+- `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/23-og-image-generation.md`. Depends on `22` (metadata wiring).
-- One-photo rule: profile card's headshot flows from Site Settings (currently empty → card renders name/title only; lights up when uploaded).
-- Font fetch is guarded (`allSettled`) so a transient Google Fonts hiccup degrades to the default face rather than 500-ing the endpoint.
-- Runtime `nodejs` (Sanity client + font fetch).
+- Full spec: `@context/features/24-sitemap-and-robots.md`.
+- Depends on seeded/project content from feature `10` and public routes from Phases 3–4.
+- Reuse `SITE_URL` / `absoluteUrl()` from `src/lib/seo.ts` so the domain behavior stays consistent with metadata and JSON-LD.
+- Fetch project slugs from Sanity with the existing `allProjectsQuery` + `SANITY_TAGS.project`.
+- User-requested navigation follow-up while this branch is open: make the shared nav provide an explicit Home route from `/about`, `/press`, and detail pages; root-relative homepage section links should not trap users on the current path.
 
 ## Out of Scope
 
-- `sitemap.ts` / `robots.ts` — feature `24`.
 - Revalidate webhook — feature `25`.
 - The off-page SEO checklist doc — feature `26`.
 
 ## History
 
+- **2026-07-02** — Feature 24 (Sitemap & Robots) complete. Added `src/app/sitemap.ts` using the existing `SITE_URL` / `absoluteUrl()` SEO helpers and `allProjectsQuery` via tagged `sanityFetch` to generate the public sitemap: `/`, `/work`, `/about`, `/press`, and every seeded `/work/[slug]` route; `/studio` and API routes are intentionally excluded. Added `src/app/robots.ts` allowing public crawl, disallowing `/studio` and `/api/`, setting `Host`, and pointing to `https://marinacuesta.com/sitemap.xml`. Also completed the user-requested navigation follow-up: `src/components/layout/Nav.tsx` now includes an explicit `Home` link and makes homepage section links root-relative (`/#work`, `/#recognition`, `/#contact`) so visitors can navigate home from `/about`, `/press`, and detail pages without using browser back/refresh. Verified: `npm run build` passes; existing local server at `localhost:3003` returns `/sitemap.xml` with all static public pages plus 20 project URLs and `/robots.txt` with the expected allow/disallow/sitemap rules.
 - **2026-07-02** — Feature 23 (OG Image Generation) complete. Added `src/app/api/og/route.tsx` (`runtime = "nodejs"`) using `next/og`'s `ImageResponse` (built into Next 16.2.9 — **no `@vercel/og` install needed**). Two 1200×630 landscape cards: **profile** (default, no params) reads Site Settings for `name`/`jobTitle`/`headshot` (one-photo rule — the route fetches the single headshot via `urlFor().width(560).height(700)`, so the card lights up automatically), rendered on `oxblood` with the name as a monument (last word italic garnet, e.g. "Marina *Cuesta*"), a garnet Hanken role eyebrow, framed headshot, and a `marinacuesta.com` footer; **project** (`?type=project&title=&client=&category=`) on `paper` with a garnet category eyebrow, Fraunces title, uppercase client, and a garnet-dashed `Marina Cuesta · Executive Creative Director` footer. Fonts (Fraunces 500 roman+italic, Hanken 600) are fetched from Google Fonts **text-subset to the rendered glyphs** (so Spanish accents render) via a `loadGoogleFont` helper + `loadFonts` wrapper guarded with `Promise.allSettled` — a transient font hiccup degrades to satori's default face instead of 500-ing. Settings fetch is `try/catch` → falls back to "Marina Cuesta"/"Executive Creative Director". Wired into feature-22 metadata: added `ogProfileImageUrl()` and `ogProjectImageUrl(project)` (absolute `/api/og` URLs) to `src/lib/seo.ts`, made `buildMetadata` default its OG/Twitter image to the profile card (removed the old `ogImageUrl` headshot helper), pointed root `layout.tsx` default OG/Twitter at the profile card, and switched `/work/[slug]` OG to the per-project card (replacing the cover/headshot fallback — the branded card is consistent and always present). Verified: `npm run build` passes (`/api/og` is `ƒ` Dynamic, all other routes unchanged); dev server returned valid 1200×630 PNGs for both variants (headshot present in the profile card — a real photo has since been uploaded to Site Settings; `&`/accents render correctly); and the prerendered `og:image`/`twitter:image` meta on `/`, `/about`, and `/work/p-g-the-pattern-bra` point at the correct `/api/og` URLs with the project params encoded. Out of scope (later Phase 5): `sitemap.ts`/`robots.ts` (`24`), revalidate webhook (`25`), off-page checklist (`26`).
 - **2026-07-02** — Feature 22 (Metadata & JSON-LD) complete. Added `src/lib/seo.ts` (helpers reading Site Settings): `SITE_URL` (from `NEXT_PUBLIC_SITE_URL`, fallback `https://marinacuesta.com`, trailing-slash stripped) + `absoluteUrl()`; `ogImageUrl()` (headshot → absolute 1200×630 Sanity URL, null when unset); `buildMetadata()` (canonical via `alternates.canonical`, Open Graph + Twitter `summary_large_image`, headshot as default OG image or an explicit override); `personJsonLd()` and `creativeWorkJsonLd()`. Added `src/components/seo/JsonLd.tsx` (server component emitting a `<script type="application/ld+json">`). Root `layout.tsx` is now async: `generateMetadata` sets `metadataBase`, a title template (`%s — {name}`) with an absolute home default (`{name} — {jobTitle}`), and default OG/Twitter from the headshot; the body renders one **Person** JSON-LD (name, jobTitle, image, url, `sameAs` from socials, `knowsLanguage` `["en","es"]`, `worksFor` derived from the **last** `careerArc` entry = current org, email) — guarded so a null/failed settings fetch renders nothing. Per-page `generateMetadata` added to home (`/`, absolute title, description from `seo.description`/`shortBio`), `/about` and `/press` (replaced their static `metadata` exports), and `/work/[slug]` (title=project title, description=summary, OG image = project cover when present else headshot). `/work/[slug]` also emits **CreativeWork** JSON-LD (name, url, abstract, genre, dateCreated, creator=Person, sourceOrganization=client). Added `NEXT_PUBLIC_SITE_URL` to `.env.example`. One-photo rule honored: `image`/`og:image` both flow from the single Site Settings headshot as an absolute URL (currently omitted everywhere because the headshot is still client-provided/empty — they light up automatically once uploaded). Verified: `npm run build` passes, all routes stay `○`/`●`; prerendered HTML confirms the Person block (1× on home, correct `sameAs`/`worksFor`), CreativeWork on `/work/p-g-the-pattern-bra`, correct `<title>`/canonical on all four page types, and exactly one `<h1>` per page. Out of scope (later Phase 5): dynamic `/api/og` endpoint (`23`), `sitemap.ts`/`robots.ts` (`24`), off-page checklist (`26`).
 - **2026-07-02** — Feature 21 (Press Page `/press`) complete. Added `src/app/(site)/press/page.tsx` inside the chrome route group as a static server page fetching `allPressQuery` with the `pressMention` cache tag, wrapped in `try/catch` (fails soft to `[]`). It renders a single `<h1>` "04 Press & Mentions" (same garnet super-script index treatment as About's "02 About") and hands the ordered list to `src/components/press/PressList.tsx`. Each press row is a full-row `<a>` (`grid-cols-[auto_1fr_auto]`) porting the prototype `.press-item`: garnet small-caps `outlet` (min-w 130px), Fraunces `title` with an `ink-2` uppercase `type · date` meta line beneath (both guarded), and a `↗` arrow that nudges up-right + turns garnet on hover/focus; the whole row shifts `pl-3` on hover/focus. External http(s) links get `target=_blank` + `rel=noopener noreferrer`; the list renders a graceful "on the way" empty state when there are no mentions. Collapses to a 2-col layout ≤600px (outlet spans full width). Updated `src/components/layout/Nav.tsx` so the Press link resolves to `/press` (was the dead `#press` anchor — no home Press section exists). Completes **Phase 4** (all dedicated pages now exist). Verified: `npm run build` passes and prerenders `/press` as static (`○`); the prerendered `press.html` contains the "Press & Mentions" head and 6 press rows (all `↗` arrows) from current Sanity content.

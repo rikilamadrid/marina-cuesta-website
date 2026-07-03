@@ -20,7 +20,7 @@ All working context lives in `@context/`. Read the relevant files before startin
 
 ```
 context/
-├── current-feature.md      # What's being built right now — status, goals, notes, history log
+├── current-feature.md      # What's being built right now — status, goals, notes (active task only)
 ├── features/                # Specs for phases/features not yet started or already completed
 ├── screenshots/              # Reference screenshots for UI being built (e.g. dashboard-ui-main.png)
 ├── project-overview.md      # Full project spec: stack, content models, design system, phases, seed content
@@ -28,7 +28,7 @@ context/
 └── SEO-CHECKLIST.md         # Post-launch SEO + domain + Google Knowledge Panel steps
 ```
 
-- **`current-feature.md`** is the single source of truth for what's in progress. Update it as work happens — Status, Goals, Notes, and append to History once a feature is merged. Don't start work not described in it without asking.
+- **`current-feature.md`** is the single source of truth for what's in progress. Update it as work happens — Status, Goals, Notes. It tracks only the active task; the per-feature build log lives in `CHANGELOG.md` at the repo root — prepend an entry there once a feature is merged. Don't start work not described in `current-feature.md` without asking.
 - **`features/`** holds specs for other phases (past or upcoming) — check here before assuming a phase hasn't been planned yet.
 - **`screenshots/`** holds visual references for whatever UI is being built. If `current-feature.md` references a screenshot, look at it before writing markup.
 - **`marina-cuesta.html`** is the design/copy source of truth for the whole site, not just one feature — check it for tokens, layout, and interaction patterns regardless of which feature is active.
@@ -56,7 +56,7 @@ context/
 
 - Confirm the build still runs (`next build`) with no type errors.
 - If you touched Sanity schemas, confirm the Studio at `/studio` still loads and the new/changed fields render sensibly.
-- Update `context/current-feature.md`: refresh Notes/Status, and if the feature is complete, mark it done and append an entry to History.
+- Update `context/current-feature.md`: refresh Notes/Status, and if the feature is complete, mark it done and prepend an entry to `CHANGELOG.md` (repo root).
 - Leave a short note (in your final message, not committed to a file) on what was completed and what the next session should pick up.
 
 ---
@@ -74,7 +74,7 @@ Same workflow for every feature/fix:
 7. **Merge** — merge to main once approved.
 8. **Delete branch** — ask before deleting.
 9. **Review** — periodically review AI-generated code for security (auth/input validation), performance, logic edge cases, and consistency with existing patterns.
-10. **Close out** — mark the feature complete and log it in `context/current-feature.md` → History.
+10. **Close out** — mark the feature complete in `context/current-feature.md` and prepend its entry to `CHANGELOG.md` (repo root).
 
 ## Communication & code-change discipline
 
@@ -104,7 +104,8 @@ Same workflow for every feature/fix:
 
 | File | Purpose |
 | --- | --- |
-| `context/current-feature.md` | The active task — status, goals, notes, history log |
+| `context/current-feature.md` | The active task — status, goals, notes (active task only) |
+| `CHANGELOG.md` | Per-feature build log — one entry per merged feature/fix, newest first |
 | `context/features/` | Specs for other phases/features, past or upcoming |
 | `context/screenshots/` | Reference screenshots for UI being built |
 | `context/project-overview.md` | Full spec: stack, content models, design system, phases, seed content |

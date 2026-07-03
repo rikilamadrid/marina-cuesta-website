@@ -5,6 +5,18 @@ function isExternal(href: string) {
   return /^https?:\/\//i.test(href);
 }
 
+// Sanity stores the press date as a YYYY-MM-DD string; display it as "June 2016".
+// Parse the parts and format in UTC so US timezones don't roll the day back a month.
+function formatDate(date?: string) {
+  if (!date) return undefined;
+  const [year, month] = date.split("-");
+  if (!year || !month) return date;
+  return new Date(Date.UTC(Number(year), Number(month) - 1, 1)).toLocaleDateString(
+    "en-US",
+    { month: "long", year: "numeric", timeZone: "UTC" },
+  );
+}
+
 export default function PressList({ press }: { press: PressMention[] }) {
   if (press.length === 0) {
     return (
@@ -26,6 +38,7 @@ export default function PressList({ press }: { press: PressMention[] }) {
 function PressRow({ item }: { item: PressMention }) {
   const { outlet, title, type, date, link } = item;
   const external = isExternal(link);
+  const displayDate = formatDate(date);
 
   return (
     <a
@@ -42,9 +55,9 @@ function PressRow({ item }: { item: PressMention }) {
         <span className="font-display text-[1.15rem] leading-[1.2] text-ink">
           {title}
         </span>
-        {(type || date) && (
+        {(type || displayDate) && (
           <span className="mt-1 block text-[11px] uppercase tracking-[0.1em] text-ink-2">
-            {[type, date].filter(Boolean).join(" · ")}
+            {[type, displayDate].filter(Boolean).join(" · ")}
           </span>
         )}
       </span>

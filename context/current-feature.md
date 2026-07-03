@@ -1,35 +1,42 @@
 # Current Feature
 
-Feature 24 — Sitemap & Robots
+Feature 25 — On-Demand Revalidation Webhook
 
 ## Status
 
-Complete — branch `feature/sitemap-and-robots`; ready for review/merge.
+Complete — branch `feature/revalidate-webhook`; ready for review/merge.
 
 ## Goals
 
-- Build `src/app/sitemap.ts` generating entries from Sanity content: home, `/work`, every `/work/[slug]`, `/about`, `/press`.
-- Exclude `/studio` and API routes from the sitemap.
-- Build `src/app/robots.ts` allowing crawl of public pages, disallowing `/studio` and `/api/*`, and pointing to the sitemap.
-- Use the absolute base URL from `NEXT_PUBLIC_SITE_URL` via the existing SEO helpers.
-- Verify `/sitemap.xml` and `/robots.txt` output the expected URLs including seeded project slugs.
+- Build `src/app/api/revalidate/route.ts` to receive Sanity publish webhooks.
+- Verify Sanity signed webhook payloads with a shared secret before revalidating.
+- Revalidate the existing Sanity cache tags for Site Settings, Projects, and Press.
+- Revalidate affected public paths so new/changed content appears without a redeploy.
+- Document the required webhook secret env var in `.env.example`.
+- Verify locally with signed requests where possible; note that full publish-to-live verification requires a deployed URL configured in Sanity.
 - `npm run build` passes.
 
 ## Notes
 
-- Full spec: `@context/features/24-sitemap-and-robots.md`.
-- Depends on seeded/project content from feature `10` and public routes from Phases 3–4.
-- Reuse `SITE_URL` / `absoluteUrl()` from `src/lib/seo.ts` so the domain behavior stays consistent with metadata and JSON-LD.
-- Fetch project slugs from Sanity with the existing `allProjectsQuery` + `SANITY_TAGS.project`.
-- User-requested navigation follow-up while this branch is open: make the shared nav provide an explicit Home route from `/about`, `/press`, and detail pages; root-relative homepage section links should not trap users on the current path.
+- Full spec: `@context/features/25-revalidate-webhook.md`.
+- Depends on feature `10`'s tagged `sanityFetch`; tags already exist in `src/sanity/lib/fetch.ts`.
+- Use `next-sanity/webhook`'s `parseBody` helper so the raw Sanity payload is used for signature validation.
+- Use Next's current two-argument `revalidateTag(tag, { expire: 0 })` form for webhook-triggered immediate expiration.
+- Webhook payload should include at least `_id`, `_type`, and `"slug": slug.current` for projects.
+- Suggested Sanity webhook filter: `_type in ["siteSettings", "project", "pressMention"]`.
+- Suggested Sanity webhook projection: `{_id, _type, "slug": slug.current}`.
+- Verification: `npm run build` passes.
+- Local smoke test: `next start -p 3011` with `SANITY_REVALIDATE_SECRET=local-test-secret`; signed project payload returned `200` with `/`, `/work`, `/sitemap.xml`, and `/work/p-g-the-pattern-bra` targets; invalid signature returned `401`; signed Site Settings payload returned `200` with `revalidatePath("/", "layout")`.
 
 ## Out of Scope
 
-- Revalidate webhook — feature `25`.
+- Creating/configuring the production Sanity webhook in the dashboard, except for documenting the settings.
+- Deploy/hosting setup beyond code needed for the endpoint.
 - The off-page SEO checklist doc — feature `26`.
 
 ## History
 
+- **2026-07-02** — Feature 25 (On-Demand Revalidation Webhook) complete. Added `src/app/api/revalidate/route.ts` as a signed Sanity publish webhook endpoint using `next-sanity/webhook`'s `parseBody` helper and `SANITY_REVALIDATE_SECRET`. The route accepts `siteSettings`, `project`, and `pressMention` payloads, rejects missing/invalid secrets and unsupported document types, calls `revalidateTag(tag, { expire: 0 })` for immediate Sanity cache expiration, and revalidates affected route targets: Site Settings uses `revalidatePath("/", "layout")` so headshot/metadata/JSON-LD changes flow across the app; projects refresh `/`, `/work`, `/sitemap.xml`, and the slug detail path when supplied; press mentions refresh `/press`. Documented `SANITY_REVALIDATE_SECRET` in `.env.example`. Verified: `npm run build` passes; local production smoke test with a generated `sanity-webhook-signature` returned `200` for a signed project payload, `401` for an invalid signature, and `200` for a signed Site Settings payload. Full publish-to-live verification remains dependent on configuring the deployed Sanity webhook URL in the Sanity dashboard.
 - **2026-07-02** — Feature 24 (Sitemap & Robots) complete. Added `src/app/sitemap.ts` using the existing `SITE_URL` / `absoluteUrl()` SEO helpers and `allProjectsQuery` via tagged `sanityFetch` to generate the public sitemap: `/`, `/work`, `/about`, `/press`, and every seeded `/work/[slug]` route; `/studio` and API routes are intentionally excluded. Added `src/app/robots.ts` allowing public crawl, disallowing `/studio` and `/api/`, setting `Host`, and pointing to `https://marinacuesta.com/sitemap.xml`. Also completed the user-requested navigation follow-up: `src/components/layout/Nav.tsx` now includes an explicit `Home` link and makes homepage section links root-relative (`/#work`, `/#recognition`, `/#contact`) so visitors can navigate home from `/about`, `/press`, and detail pages without using browser back/refresh. Verified: `npm run build` passes; existing local server at `localhost:3003` returns `/sitemap.xml` with all static public pages plus 20 project URLs and `/robots.txt` with the expected allow/disallow/sitemap rules.
 - **2026-07-02** — Feature 23 (OG Image Generation) complete. Added `src/app/api/og/route.tsx` (`runtime = "nodejs"`) using `next/og`'s `ImageResponse` (built into Next 16.2.9 — **no `@vercel/og` install needed**). Two 1200×630 landscape cards: **profile** (default, no params) reads Site Settings for `name`/`jobTitle`/`headshot` (one-photo rule — the route fetches the single headshot via `urlFor().width(560).height(700)`, so the card lights up automatically), rendered on `oxblood` with the name as a monument (last word italic garnet, e.g. "Marina *Cuesta*"), a garnet Hanken role eyebrow, framed headshot, and a `marinacuesta.com` footer; **project** (`?type=project&title=&client=&category=`) on `paper` with a garnet category eyebrow, Fraunces title, uppercase client, and a garnet-dashed `Marina Cuesta · Executive Creative Director` footer. Fonts (Fraunces 500 roman+italic, Hanken 600) are fetched from Google Fonts **text-subset to the rendered glyphs** (so Spanish accents render) via a `loadGoogleFont` helper + `loadFonts` wrapper guarded with `Promise.allSettled` — a transient font hiccup degrades to satori's default face instead of 500-ing. Settings fetch is `try/catch` → falls back to "Marina Cuesta"/"Executive Creative Director". Wired into feature-22 metadata: added `ogProfileImageUrl()` and `ogProjectImageUrl(project)` (absolute `/api/og` URLs) to `src/lib/seo.ts`, made `buildMetadata` default its OG/Twitter image to the profile card (removed the old `ogImageUrl` headshot helper), pointed root `layout.tsx` default OG/Twitter at the profile card, and switched `/work/[slug]` OG to the per-project card (replacing the cover/headshot fallback — the branded card is consistent and always present). Verified: `npm run build` passes (`/api/og` is `ƒ` Dynamic, all other routes unchanged); dev server returned valid 1200×630 PNGs for both variants (headshot present in the profile card — a real photo has since been uploaded to Site Settings; `&`/accents render correctly); and the prerendered `og:image`/`twitter:image` meta on `/`, `/about`, and `/work/p-g-the-pattern-bra` point at the correct `/api/og` URLs with the project params encoded. Out of scope (later Phase 5): `sitemap.ts`/`robots.ts` (`24`), revalidate webhook (`25`), off-page checklist (`26`).
 - **2026-07-02** — Feature 22 (Metadata & JSON-LD) complete. Added `src/lib/seo.ts` (helpers reading Site Settings): `SITE_URL` (from `NEXT_PUBLIC_SITE_URL`, fallback `https://marinacuesta.com`, trailing-slash stripped) + `absoluteUrl()`; `ogImageUrl()` (headshot → absolute 1200×630 Sanity URL, null when unset); `buildMetadata()` (canonical via `alternates.canonical`, Open Graph + Twitter `summary_large_image`, headshot as default OG image or an explicit override); `personJsonLd()` and `creativeWorkJsonLd()`. Added `src/components/seo/JsonLd.tsx` (server component emitting a `<script type="application/ld+json">`). Root `layout.tsx` is now async: `generateMetadata` sets `metadataBase`, a title template (`%s — {name}`) with an absolute home default (`{name} — {jobTitle}`), and default OG/Twitter from the headshot; the body renders one **Person** JSON-LD (name, jobTitle, image, url, `sameAs` from socials, `knowsLanguage` `["en","es"]`, `worksFor` derived from the **last** `careerArc` entry = current org, email) — guarded so a null/failed settings fetch renders nothing. Per-page `generateMetadata` added to home (`/`, absolute title, description from `seo.description`/`shortBio`), `/about` and `/press` (replaced their static `metadata` exports), and `/work/[slug]` (title=project title, description=summary, OG image = project cover when present else headshot). `/work/[slug]` also emits **CreativeWork** JSON-LD (name, url, abstract, genre, dateCreated, creator=Person, sourceOrganization=client). Added `NEXT_PUBLIC_SITE_URL` to `.env.example`. One-photo rule honored: `image`/`og:image` both flow from the single Site Settings headshot as an absolute URL (currently omitted everywhere because the headshot is still client-provided/empty — they light up automatically once uploaded). Verified: `npm run build` passes, all routes stay `○`/`●`; prerendered HTML confirms the Person block (1× on home, correct `sameAs`/`worksFor`), CreativeWork on `/work/p-g-the-pattern-bra`, correct `<title>`/canonical on all four page types, and exactly one `<h1>` per page. Out of scope (later Phase 5): dynamic `/api/og` endpoint (`23`), `sitemap.ts`/`robots.ts` (`24`), off-page checklist (`26`).

@@ -32,7 +32,7 @@ function PressRow({ item }: { item: PressMention }) {
       href={link}
       target={external ? "_blank" : undefined}
       rel={external ? "noopener noreferrer" : undefined}
-      className="group grid grid-cols-[auto_1fr_auto] items-center gap-[22px] border-b border-line py-[22px] transition-[padding] duration-300 ease-[var(--ease)] hover:pl-3 focus-visible:pl-3 focus-visible:outline-none max-[600px]:grid-cols-[1fr_auto] max-[600px]:gap-x-4 max-[600px]:gap-y-1.5"
+      className="group grid grid-cols-[auto_1fr_auto] items-center gap-[22px] border-b border-line py-[22px] transition-[padding] duration-300 ease-[var(--ease)] hover:pl-3 focus-visible:pl-3 max-[600px]:grid-cols-[1fr_auto] max-[600px]:gap-x-4 max-[600px]:gap-y-1.5"
     >
       <span className="min-w-[130px] text-[11px] font-semibold uppercase tracking-[0.16em] text-garnet max-[600px]:col-span-2">
         {outlet}

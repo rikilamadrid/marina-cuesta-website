@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const NAV_LINKS = [
   { label: "Home", href: "/" },
@@ -21,6 +21,25 @@ export default function Nav() {
   // links invert to bone; over paper it shows the backdrop with ink links.
   const [onDark, setOnDark] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const burgerRef = useRef<HTMLButtonElement>(null);
+  const mobileNavRef = useRef<HTMLElement>(null);
+
+  const closeMenu = (returnFocus = false) => {
+    setMenuOpen(false);
+    if (returnFocus) burgerRef.current?.focus();
+  };
+
+  // Mobile menu keyboard behavior: Escape closes and returns focus to the
+  // burger; opening moves focus to the first link so keyboard users land inside.
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeMenu(true);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    mobileNavRef.current?.querySelector<HTMLElement>("a")?.focus();
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [menuOpen]);
 
   useEffect(() => {
     const onScroll = () => {
@@ -48,6 +67,7 @@ export default function Nav() {
 
   return (
     <header
+      data-on-dark={onDark || undefined}
       className={`fixed inset-x-0 top-0 z-50 flex items-center justify-end gap-8 border-b transition-[background,padding,border-color,color] duration-[400ms] ease-[var(--ease)] ${
         showBackdrop
           ? "border-line bg-paper/85 px-[34px] py-[14px] backdrop-blur-md"
@@ -74,8 +94,9 @@ export default function Nav() {
 
       {/* Burger (mobile only) */}
       <button
+        ref={burgerRef}
         type="button"
-        aria-label="Menu"
+        aria-label={menuOpen ? "Close menu" : "Open menu"}
         aria-expanded={menuOpen}
         aria-controls="mobile-nav"
         onClick={() => setMenuOpen((v) => !v)}
@@ -102,15 +123,21 @@ export default function Nav() {
           of what section sits behind the nav. */}
       {menuOpen && (
         <nav
+          ref={mobileNavRef}
           id="mobile-nav"
-          aria-label="Primary"
+          aria-label="Mobile"
+          // Close when keyboard focus leaves the menu (disclosure pattern) —
+          // tabbing past the last link dismisses it without trapping focus.
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) closeMenu();
+          }}
           className="absolute right-[18px] top-full flex flex-col gap-4 rounded-xl border border-line bg-paper px-[22px] py-[18px] text-ink shadow-[0_20px_40px_-20px_rgba(61,13,23,0.4)] min-[681px]:hidden"
         >
           {NAV_LINKS.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              onClick={() => setMenuOpen(false)}
+              onClick={() => closeMenu()}
               className="text-[13px] font-medium tracking-[0.04em] text-ink transition-colors duration-[250ms] hover:text-garnet"
             >
               {link.label}

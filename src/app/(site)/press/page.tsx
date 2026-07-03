@@ -34,7 +34,7 @@ export default async function PressPage() {
   }
 
   return (
-    <main className="bg-bone py-[110px] max-[720px]:py-24">
+    <main id="main-content" tabIndex={-1} className="bg-bone py-[110px] max-[720px]:py-24">
       <section className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <header className="mb-[78px] max-[720px]:mb-12">
           <h1 className="font-display text-[clamp(2.6rem,7vw,5.2rem)] font-normal leading-none tracking-[-0.015em] text-ink">

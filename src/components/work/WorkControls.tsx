@@ -69,7 +69,7 @@ export default function WorkControls({ projects }: Props) {
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search projects, clients…"
             aria-label="Search projects"
-            className="w-full border-0 border-b border-line bg-transparent py-2.5 pl-1 pr-7 text-[13px] text-ink outline-none transition-colors duration-250 placeholder:text-ink-2 focus:border-garnet"
+            className="w-full border-0 border-b border-line bg-transparent py-2.5 pl-1 pr-7 text-[13px] text-ink transition-colors duration-250 placeholder:text-ink-2 focus:border-garnet"
           />
           <svg
             aria-hidden="true"

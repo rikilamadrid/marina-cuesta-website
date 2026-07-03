@@ -34,7 +34,7 @@ export default function ProjectCard({ project, index = 0 }: Props) {
   return (
     <Link
       href={`/work/${slug}`}
-      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[3px] border border-line bg-bone p-6 no-underline transition-[transform,box-shadow] duration-500 ease-[var(--ease)] hover:-translate-y-1 hover:shadow-[var(--shadow)]"
+      className="group relative flex aspect-[4/5] flex-col justify-end overflow-hidden rounded-[3px] border border-line bg-bone p-6 no-underline transition-[transform,box-shadow] duration-500 ease-[var(--ease)] hover:-translate-y-1 hover:shadow-[var(--shadow)] motion-reduce:transition-none"
     >
       {hasCover ? (
         <>
@@ -43,7 +43,7 @@ export default function ProjectCard({ project, index = 0 }: Props) {
             alt={`${title} — ${client}`}
             fill
             sizes="(max-width: 600px) 100vw, (max-width: 980px) 50vw, 33vw"
-            className="object-cover [filter:grayscale(0.12)_contrast(1.02)]"
+            className="scale-[1.01] object-cover transition-transform duration-700 ease-[var(--ease)] [filter:grayscale(0.12)_contrast(1.02)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-[1.01]"
           />
           {/* Bottom-up scrim keeps the client/title legible over any photo. */}
           <div
@@ -55,7 +55,7 @@ export default function ProjectCard({ project, index = 0 }: Props) {
         <div
           aria-hidden="true"
           style={{ ["--c1" as string]: c1, ["--c2" as string]: c2 }}
-          className="absolute inset-0 bg-[linear-gradient(160deg,var(--c1),var(--c2))] opacity-[0.92]"
+          className="absolute inset-0 scale-[1.01] bg-[linear-gradient(160deg,var(--c1),var(--c2))] opacity-[0.92] transition-transform duration-700 ease-[var(--ease)] group-hover:scale-[1.06] motion-reduce:transition-none motion-reduce:group-hover:scale-[1.01]"
         />
       )}
 
@@ -71,7 +71,7 @@ export default function ProjectCard({ project, index = 0 }: Props) {
         {title}
       </span>
 
-      <span className="relative z-[2] mt-3.5 flex items-center gap-2 text-[12px] text-white/85 opacity-0 transition-opacity duration-300 ease-[var(--ease)] group-hover:opacity-100">
+      <span className="relative z-[2] mt-3.5 flex -translate-x-1.5 items-center gap-2 text-[12px] text-white/85 opacity-0 transition-[opacity,transform] duration-300 ease-[var(--ease)] group-hover:translate-x-0 group-hover:opacity-100 motion-reduce:translate-x-0 motion-reduce:transition-none">
         View project →
       </span>
     </Link>

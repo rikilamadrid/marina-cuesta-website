@@ -1,32 +1,30 @@
 # Current Feature
 
-Feature 28 - Accessibility Pass
+Feature 29 - Performance Pass
 
 ## Status
 
-Complete — implemented on `feature/accessibility-pass`, `npm run build` passes clean. Entry prepended to `CHANGELOG.md`. Ready to merge to main.
+Not Started - next up (Phase 6). Feature 28 (Accessibility Pass) merged to main.
 
 ## Goals
 
-- Keyboard operability throughout; **visible focus rings** everywhere (do not remove outlines).
-- Exactly one `<h1>` per page; logical heading order; landmark regions (`header`/`main`/`footer`/`nav`).
-- **AA contrast** verified on paper **and** oxblood fields (bone-on-oxblood must pass).
-- Descriptive `alt` on the headshot ("Marina Cuesta, Executive Creative Director") and all project covers.
-- `prefers-reduced-motion` honored (cross-check with `27`).
-- Mobile menu is accessible (focus trap/return, `aria-expanded`, escape to close).
-- Fix issues found; document any deliberate exceptions.
+- `next/image` for the headshot and all covers with Sanity CDN width/quality params; lazy-load below the fold; correct `sizes`.
+- `next/font` preloads the display weight; `font-display: swap`; avoid layout shift.
+- Minimize client JS — confirm search/filter is the main interactive island; everything else server-rendered.
+- Cap `backdrop-filter` to nav only; keep motion on transform/opacity.
+- SSG/ISR everywhere appropriate.
+- Hit the budget: **Lighthouse Performance, SEO, Best Practices ≥ 95**; **LCP < 2.0s on mobile**. Record scores.
 
 ## Notes
 
-- Full spec: `@context/features/28-accessibility-pass.md`.
-- **Depends on:** `27` (motion/reduced-motion, now merged) and all pages. Run an audit (axe / Lighthouse a11y) and fix.
-- Requirements: `@context/project-overview.md` → Accessibility. Studio is Sanity's own accessible UI — no extra work there.
-- Contrast note: the prototype's bone-on-oxblood already passes; keep those exact values.
-- Cross-check reduced-motion behavior already added in Feature 27 (`Reveal`, `HeroText`, `template.tsx`, `ProjectCard` `motion-reduce:` variants).
+- Full spec: `@context/features/29-performance-pass.md`.
+- **Depends on:** `27`, `28` (both merged) and all pages. Measure with Lighthouse (mobile) and fix regressions.
+- Budget + guidance: `@context/project-overview.md` → Performance. Core Web Vitals also feed the "top of Google" goal.
+- The hero headshot is the likely LCP element — ensure it's optimized/prioritized appropriately.
 
 ## Out of Scope
 
-- Performance and responsive passes (`29`, `30`).
+- Responsive QA on a real phone — feature `30`.
 - New features/content.
 
 ## History

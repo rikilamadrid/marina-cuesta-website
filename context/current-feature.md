@@ -4,7 +4,7 @@ Feature 28 - Accessibility Pass
 
 ## Status
 
-Not Started - next up (Phase 6). Feature 27 (Motion & Nav Inversion) merged to main.
+Complete — implemented on `feature/accessibility-pass`, `npm run build` passes clean. Entry prepended to `CHANGELOG.md`. Ready to merge to main.
 
 ## Goals
 

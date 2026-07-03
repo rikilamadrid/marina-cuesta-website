@@ -15,7 +15,7 @@ export default async function WorkPage() {
   });
 
   return (
-    <main className="py-[110px] max-[720px]:py-20">
+    <main id="main-content" tabIndex={-1} className="py-[110px] max-[720px]:py-20">
       <div className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-[30px]">
           <h1 className="font-display text-[clamp(2rem,5vw,3.4rem)] font-normal leading-none tracking-[-0.015em]">

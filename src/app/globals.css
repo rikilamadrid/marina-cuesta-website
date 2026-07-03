@@ -52,3 +52,34 @@ body {
   background: var(--color-garnet);
   color: var(--color-bone);
 }
+
+/* Visible keyboard focus everywhere — never remove outlines. Garnet reads on
+   the light paper/bone surfaces; over dark (oxblood) fields we switch the ring
+   to bone so it stays visible (garnet-on-oxblood is too low-contrast). */
+:focus-visible {
+  outline-width: 2px;
+  outline-style: solid;
+  outline-color: var(--color-garnet);
+  outline-offset: 2px;
+}
+[data-nav-dark] :focus-visible,
+[data-on-dark] :focus-visible {
+  outline-color: var(--color-bone);
+}
+
+/* Reduced motion: kill smooth scroll and CSS transitions/animations. JS
+   (Framer Motion) is handled per-component via useReducedMotion (feature 27);
+   this is the CSS safety net. */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

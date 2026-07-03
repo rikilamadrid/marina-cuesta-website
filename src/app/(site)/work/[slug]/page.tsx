@@ -90,7 +90,7 @@ export default async function ProjectPage({
   if (!project) notFound();
 
   return (
-    <main>
+    <main id="main-content" tabIndex={-1}>
       <JsonLd data={creativeWorkJsonLd(project, settings)} />
       <ProjectDetail project={project} />
     </main>

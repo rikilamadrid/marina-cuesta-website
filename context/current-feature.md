@@ -4,7 +4,20 @@ Feature 31 - Vercel Deploy & CI/CD
 
 ## Status
 
-Not Started — spec written. First of three post-launch features (31 deploy/CI-CD → 32 dark mode → 33 EN/ES toggle). Working them one at a time.
+In Progress — code deliverables done; remaining steps are owner/dashboard-driven. First of three post-launch features (31 deploy/CI-CD → 32 dark mode → 33 EN/ES toggle). Working them one at a time.
+
+**Code done (this branch, `feature/vercel-deploy-and-cicd`):**
+
+- `.github/workflows/ci.yml` — CI gate on PR→`main` and push→`main`: `npm ci` → `typecheck` → `lint` → `build`. Verification only; does not deploy. Node from `.nvmrc` (22); build env pulls public Sanity config from repo Variables with sensible fallbacks.
+- Added `typecheck` script (`tsc --noEmit`) to `package.json`. Verified `typecheck` + `lint` + `build` all pass locally.
+- `DEPLOY.md` — owner runbook: Vercel project + env vars, GitHub Actions Variables, Sanity CORS for `/studio`, revalidate webhook, DNS for `marinacuesta.com`, ship checklist.
+
+**Owner/dashboard-driven (cannot be done from code — see `DEPLOY.md`):** Vercel import + env vars + Node 22, GitHub Actions Variable `NEXT_PUBLIC_SANITY_PROJECT_ID`, Sanity CORS origin, point webhook at live URL + test publish, DNS + SSL for `marinacuesta.com`.
+
+**Open questions resolved:**
+
+- Env-var names (grepped): `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`, `NEXT_PUBLIC_SITE_URL`, `SANITY_REVALIDATE_SECRET`. `SANITY_API_WRITE_TOKEN` is seed-only (never in prod). **No runtime read token** — client uses `useCdn: true` on the public dataset, so the spec's "API read token" doesn't apply.
+- DNS: `SEO-CHECKLIST.md` doesn't cover DNS; `DEPLOY.md` documents the registrar records, treating DNS as owner-driven.
 
 ## Goals
 
@@ -19,6 +32,7 @@ Not Started — spec written. First of three post-launch features (31 deploy/CI-
 
 - Full spec: `@context/features/31-vercel-deploy-and-cicd.md`.
 - Next 16 / React 19 / Node ≥22. Pin Node in Vercel + Actions.
+- Vercel deploy install failed with `npm ERR! E401` because `package-lock.json` had tarball URLs pinned to a private Azure npm registry (`pkgs.dev.azure.com/BLDR/...`). Regenerate the lockfile against `https://registry.npmjs.org/` and confirm those URLs are gone.
 - Add the production `/studio` URL to Sanity CORS/dev-host whitelist (memory `sanity-studio-access`); confirm login on live `/studio`.
 - Watch for cloud-sync `' 2'` duplicate files (memory `cloud-sync-duplicate-files`) — keep them out of commits/deploys.
 - Reconcile domain steps with `@context/SEO-CHECKLIST.md`.

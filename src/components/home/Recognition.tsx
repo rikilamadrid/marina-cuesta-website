@@ -1,5 +1,7 @@
 import { Fragment } from "react";
 
+import Reveal from "@/components/ui/Reveal";
+
 // Fixed brand facts — recognition and the agencies/clients roster are Marina's
 // track record, not editable CMS content (same precedent as the Hero stat row
 // and Manifesto credo). Kept static per feature 16 spec.
@@ -55,7 +57,7 @@ export default function Recognition() {
   return (
     <section id="recognition" className="py-[110px] max-[720px]:py-20">
       {/* Shared .wrap + 72px spine-gutter left-inset (see FeaturedWork, Manifesto). */}
-      <div className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
+      <Reveal className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <div className="mb-12">
           <h2 className="font-display text-[clamp(2rem,5vw,3.4rem)] font-normal leading-none tracking-[-0.015em]">
             <span className="mr-1.5 align-super font-body text-[0.5em] font-semibold tracking-normal text-garnet">
@@ -86,7 +88,7 @@ export default function Recognition() {
             {roster(CLIENTS)}
           </p>
         </div>
-      </div>
+      </Reveal>
     </section>
   );
 }

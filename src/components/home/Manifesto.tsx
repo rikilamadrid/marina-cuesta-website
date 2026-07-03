@@ -1,3 +1,5 @@
+import Reveal from "@/components/ui/Reveal";
+
 // Fixed editorial brand copy — this is Marina's thesis, not CMS content
 // (per feature spec, deliberately hardcoded rather than pulled from Sanity).
 const CREDO = [
@@ -23,6 +25,7 @@ export default function Manifesto() {
   return (
     <section
       id="pov"
+      data-nav-dark
       className="relative overflow-hidden bg-oxblood py-[120px] text-bone"
     >
       {/* JEFA ghost watermark — decorative, sits behind the content. */}
@@ -35,17 +38,19 @@ export default function Manifesto() {
 
       {/* Same spine-gutter left-inset as the hero (see Hero.tsx). */}
       <div className="relative z-[1] mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
-        <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-blush before:inline-block before:h-px before:w-[26px] before:bg-blush before:content-['']">
-          The Point of View
-        </div>
+        <Reveal>
+          <div className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.28em] text-blush before:inline-block before:h-px before:w-[26px] before:bg-blush before:content-['']">
+            The Point of View
+          </div>
 
-        <blockquote className="mt-9 max-w-[16ch] font-display text-[clamp(1.7rem,4.6vw,3.4rem)] font-normal leading-[1.18] tracking-[-0.01em]">
-          I don&apos;t make ads. I build platforms where culture, craft and{" "}
-          <em className="italic text-garnet">conviction</em> meet — and where the
-          next woman can see herself at the head of the table.
-        </blockquote>
+          <blockquote className="mt-9 max-w-[16ch] font-display text-[clamp(1.7rem,4.6vw,3.4rem)] font-normal leading-[1.18] tracking-[-0.01em]">
+            I don&apos;t make ads. I build platforms where culture, craft and{" "}
+            <em className="italic text-garnet">conviction</em> meet — and where
+            the next woman can see herself at the head of the table.
+          </blockquote>
+        </Reveal>
 
-        <div className="mt-[60px] grid max-w-[920px] gap-[30px] max-[720px]:grid-cols-2 min-[721px]:grid-cols-4">
+        <Reveal delay={0.12} className="mt-[60px] grid max-w-[920px] gap-[30px] max-[720px]:grid-cols-2 min-[721px]:grid-cols-4">
           {CREDO.map((item) => (
             <div key={item.k} className="border-t border-bone/20 pt-[18px]">
               <div className="mb-2 font-display text-[1.25rem]">{item.k}</div>
@@ -54,7 +59,7 @@ export default function Manifesto() {
               </div>
             </div>
           ))}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

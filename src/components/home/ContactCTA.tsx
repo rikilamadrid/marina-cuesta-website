@@ -1,3 +1,4 @@
+import Reveal from "@/components/ui/Reveal";
 import type { SiteSettings } from "@/types/sanity";
 
 type Props = {
@@ -12,9 +13,10 @@ export default function ContactCTA({ settings }: Props) {
   return (
     <section
       id="contact"
+      data-nav-dark
       className="bg-oxblood py-[130px] text-center text-bone"
     >
-      <div className="mx-auto w-full max-w-[1240px] px-5">
+      <Reveal className="mx-auto w-full max-w-[1240px] px-5">
         <h2 className="font-display text-[clamp(2.4rem,7vw,5rem)] font-normal leading-[1.02] tracking-[-0.02em]">
           Let&apos;s make something
           <br />
@@ -45,7 +47,7 @@ export default function ContactCTA({ settings }: Props) {
             ))}
           </div>
         )}
-      </div>
+      </Reveal>
     </section>
   );
 }

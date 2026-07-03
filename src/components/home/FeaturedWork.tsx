@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import Reveal from "@/components/ui/Reveal";
 import WorkGrid from "@/components/work/WorkGrid";
 import type { ProjectCard as ProjectCardData } from "@/types/sanity";
 
@@ -18,7 +19,7 @@ export default function FeaturedWork({ projects }: Props) {
   return (
     <section id="work" className="py-[110px] max-[720px]:py-20">
       {/* Shared .wrap + 72px spine-gutter left-inset (see /work, Manifesto). */}
-      <div className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
+      <Reveal className="mx-auto w-full max-w-[1240px] px-5 min-[981px]:pl-[72px] min-[981px]:pr-7">
         <div className="mb-12 flex flex-wrap items-end justify-between gap-[30px]">
           <h2 className="font-display text-[clamp(2rem,5vw,3.4rem)] font-normal leading-none tracking-[-0.015em]">
             {/* Numbered section index — the work is genuinely a catalog. */}
@@ -40,7 +41,7 @@ export default function FeaturedWork({ projects }: Props) {
         </div>
 
         <WorkGrid projects={projects} />
-      </div>
+      </Reveal>
     </section>
   );
 }
